@@ -4,10 +4,14 @@
  */
 
 /* ── 데모 영상 ──
- * 자막 클릭 → seekTo 실연을 위해 YouTube IFrame API에서 안정적으로 임베드되는
- * 표준 예제 영상을 사용한다. 실제 서비스 영상으로 교체하려면 ID만 바꾸면 된다. */
+ * 자막 클릭 → seekTo 실연을 위해 앱 내부에 YouTube 영상을 임베드한다.
+ * 실제 서비스 영상으로 교체하려면 youtubeId만 바꾸면 된다.
+ *
+ * 참고) Weverse(https://weverse.io/bts/live/3-231077541)는 외부 사이트 iframe
+ * 임베드를 차단하므로 앱 안에서 직접 재생이 불가능하다. 따라서 데모는 YouTube
+ * 영상으로 자막/seek를 시연하고, 실제 서비스에서 Weverse는 STT + 자체 플레이어로 처리한다. */
 export const DEMO_VIDEO = {
-  youtubeId: 'M7lc1UVf-VE',
+  youtubeId: 'wu6bA3zK_us', // https://youtu.be/wu6bA3zK_us
   title: '아미랑 아리랑',
   channel: 'BTS',
   platform: 'Weverse',

@@ -1,8 +1,12 @@
 /**
- * Player 화면 — 상단 YouTube 임베드 + 하단 드래그 자막 시트
- * - 자막은 영상의 실제 재생 시간(getCurrentTime)에 동기화되어 흘러나온다.
- * - 자막 한 줄을 클릭하면 해당 타임스탬프로 영상을 seek 한다.
- * (기존 app.js의 자막 시트 로직을 이관 + YouTube 연동으로 교체)
+ * Player 화면 — 상단 영상 + 하단 드래그 자막 시트
+ *
+ * 재생 소스를 "컨트롤러"로 추상화한다.
+ *  - YouTube: IFrame Player API (실제 재생 + seekTo)
+ *  - Weverse 등 임베드 불가 플랫폼: 위버스 스타일 목업 영상 영역 + 가상 재생 클럭
+ *
+ * 두 경우 모두 자막은 컨트롤러의 현재 시간(getTime)에 동기화되어 흐르고,
+ * 자막 한 줄을 탭하면 해당 타임스탬프로 이동(seekTo)한다.
  */
 import { navigate } from '../router.js';
 import { getState } from '../state.js';
@@ -14,7 +18,7 @@ import {
 
 /* ── 모듈 스코프 상태 (render마다 리셋) ── */
 let sheet, sheetContent, subtitleList, scrollToTopBtn, langPanel, langSelect;
-let ytPlayer = null;
+let controller = null;      // { getTime, seekTo, play, pause, isRunning, destroy }
 let pollTimer = null;
 let currentLang = 'en';
 
@@ -39,6 +43,11 @@ function escapeHtml(str) {
   return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 function escapeRegex(str) { return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+function fmtTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
 
 function buildAnnotatedHtml(text) {
   let result = escapeHtml(text);
@@ -51,6 +60,44 @@ function buildAnnotatedHtml(text) {
     );
   });
   return result;
+}
+
+/* ─────────────────────────────────────────
+   재생 컨트롤러
+   ───────────────────────────────────────── */
+function makeYouTubeController(videoId, onReady) {
+  let player = null;
+  whenYTReady(() => {
+    player = new window.YT.Player('yt-player', {
+      videoId,
+      // mute:1 — 브라우저 자동재생 정책상 음소거여야 자동 시작됨. 영상에서 해제 가능.
+      playerVars: { autoplay: 1, mute: 1, playsinline: 1, rel: 0, modestbranding: 1 },
+      events: { onReady: (e) => { e.target.playVideo(); onReady(); } },
+    });
+  });
+  return {
+    getTime: () => (player && player.getCurrentTime ? player.getCurrentTime() : 0),
+    seekTo: (s) => { if (player && player.seekTo) { player.seekTo(s, true); player.playVideo(); } },
+    play: () => player && player.playVideo && player.playVideo(),
+    pause: () => player && player.pauseVideo && player.pauseVideo(),
+    isRunning: () => true,
+    destroy: () => { if (player && player.destroy) { try { player.destroy(); } catch {} } player = null; },
+  };
+}
+
+/* 임베드 불가 플랫폼(위버스 등): 가상 클럭으로 자막을 흐르게 한다 */
+function makeMockController() {
+  let startTime = Date.now();
+  let elapsed = 0;
+  let running = true;
+  return {
+    getTime: () => (running ? (Date.now() - startTime) / 1000 : elapsed),
+    seekTo: (s) => { elapsed = s; startTime = Date.now() - s * 1000; running = true; },
+    play: () => { startTime = Date.now() - elapsed * 1000; running = true; },
+    pause: () => { elapsed = (Date.now() - startTime) / 1000; running = false; },
+    isRunning: () => running,
+    destroy: () => { running = false; },
+  };
 }
 
 /* ── 자막 엘리먼트 ── */
@@ -95,49 +142,35 @@ function createSubtitleEl(item) {
   row.appendChild(body);
   wrapper.appendChild(row);
 
-  // 어노테이션 클릭
   wrapper.querySelectorAll('.annotated-word').forEach((span) => {
     span.addEventListener('click', (e) => { e.stopPropagation(); showContext(span.dataset.key, span); });
   });
-  // 자막 클릭 → 해당 타임스탬프로 영상 이동
   row.addEventListener('click', () => seekToSubtitle(item, row));
 
   return wrapper;
 }
 
-function fmtTime(sec) {
-  const m = Math.floor(sec / 60);
-  const s = Math.floor(sec % 60);
-  return `${m}:${s.toString().padStart(2, '0')}`;
-}
-
 /* ── 자막 클릭 → seek ── */
 function seekToSubtitle(item, rowEl) {
-  if (ytPlayer && typeof ytPlayer.seekTo === 'function') {
-    ytPlayer.seekTo(item.start, true);
-    ytPlayer.playVideo();
-  }
+  if (controller) controller.seekTo(item.start);
   rebuildHistoryUpTo(item.start + 0.01);
-  // 시각 피드백
   const fresh = subtitleList.querySelector('.subtitle-item:last-child .subtitle-row') || rowEl;
   fresh.classList.add('seeking');
   setTimeout(() => fresh.classList.remove('seeking'), 600);
   sheetContent.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-/* ── 재생 위치까지 자막 히스토리 재구성 (seek 대응) ── */
+/* ── 재생 위치까지 히스토리 재구성 ── */
 function rebuildHistoryUpTo(time) {
   history = SUBTITLES.filter((s) => s.start <= time);
   lastSubtitleStart = history.length ? history[history.length - 1].start : -1;
   rerenderAll();
 }
 
-/* ── 순방향 진행 시 한 줄씩 추가 ── */
 function updateSubtitle(t) {
   const cur = SUBTITLES.find((s) => t >= s.start && t < s.end);
   if (!cur) return;
   if (cur.start === lastSubtitleStart) return;
-  // seek 등으로 뒤로 이동 → 재구성
   if (cur.start < lastSubtitleStart) { rebuildHistoryUpTo(t); return; }
   lastSubtitleStart = cur.start;
   history.push(cur);
@@ -145,7 +178,6 @@ function updateSubtitle(t) {
   else prependSubtitle(cur);
 }
 
-/* ── 최신 자막 추가 (column-reverse: append = 시각적 맨 위) ── */
 function prependSubtitle(item) {
   const atTop = sheetContent.scrollTop <= 20;
   const existingEls = [...subtitleList.querySelectorAll('.subtitle-item')];
@@ -230,20 +262,44 @@ function applySheetTop(top, animate = false) {
   sheet.style.top = sheetTop + 'px';
   if (animate) setTimeout(() => sheet.classList.remove('animating'), 340);
 }
-
 function updateScrollToTopLabel() {
   scrollToTopBtn.textContent = SCROLL_TO_TOP_LABELS[currentLang] || '↑ Latest';
+}
+
+/* ── 영상 영역 마크업 ── */
+function videoAreaHTML(source) {
+  if (source.platform === 'youtube' && source.youtubeId) {
+    return `<div class="video-frame"><div id="yt-player"></div></div>`;
+  }
+  // 위버스 등 임베드 불가 → 목업 영상 영역 (위버스 로고는 복제하지 않음)
+  return `
+    <div class="video-frame mock-video" id="mockVideo">
+      ${source.thumb ? `<img class="mock-bg" src="${source.thumb}" alt="" />` : ''}
+      <div class="mock-scrim"></div>
+      <div class="mock-mute"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg></div>
+      <div class="mock-center">
+        <span class="mock-live"><span class="mock-live-dot"></span>LIVE</span>
+        <button class="mock-play" id="mockPlay" aria-label="재생/일시정지">
+          <svg class="ic-pause" width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+        </button>
+      </div>
+      <div class="mock-tag">웹 프로토타입 — 위버스 영상은 실제 앱(WebView)에서 재생됩니다</div>
+    </div>`;
 }
 
 /* ─────────────────────────────────────────
    render
    ───────────────────────────────────────── */
 export function renderPlayer(params, root) {
-  const feed = (params && params.feed) || null;
-  const title = feed?.title || DEMO_VIDEO.title;
-  const artist = feed?.artist || DEMO_VIDEO.channel;
-  const thumb = feed?.artistImg || feed?.thumb || '';
-  const isLive = feed ? !!feed.live : true;
+  // source 결정 (없으면 데모 유튜브)
+  const source = (params && params.source) || {
+    platform: 'youtube', youtubeId: DEMO_VIDEO.youtubeId,
+    title: DEMO_VIDEO.title, artist: DEMO_VIDEO.channel, isLive: true, thumb: '',
+  };
+  const title = source.title || DEMO_VIDEO.title;
+  const artist = source.artist || DEMO_VIDEO.channel;
+  const isLive = !!source.isLive;
+  const isYouTube = source.platform === 'youtube' && source.youtubeId;
 
   // 상태 리셋
   history = []; lastSubtitleStart = -1; pendingItems.length = 0;
@@ -253,28 +309,16 @@ export function renderPlayer(params, root) {
   root.innerHTML = `
     <div class="player-view view fullscreen">
       <div class="video-area" id="videoArea">
-        <div class="video-frame"><div id="yt-player"></div></div>
-        <div class="video-info">
-          <div class="vi-thumb">${thumb ? `<img src="${thumb}" alt="${artist}" />` : ''}</div>
-          <div class="vi-text">
-            <div class="vi-title">${escapeHtml(title)}</div>
-            <div class="vi-meta">
-              ${isLive ? `<span class="vi-live"><span class="live-dot-red" style="width:5px;height:5px;background:var(--notif);border-radius:50%;display:inline-block;"></span>LIVE</span>` : ''}
-              <span>${escapeHtml(artist)} · Kaptik 실시간 자막</span>
-            </div>
-          </div>
-        </div>
+        ${videoAreaHTML(source)}
       </div>
 
       <div class="sheet" id="sheet">
-        <div class="sheet-grip"></div>
-        <div class="sheet-hint">자막을 탭하면 영상이 해당 장면으로 이동해요</div>
         <button class="scroll-to-top-btn" id="scrollToTopBtn">↑ Latest</button>
         <div class="sheet-content" id="sheetContent"></div>
       </div>
 
       <div class="fab-group">
-        <button class="player-fab" id="langFab" aria-label="자막 언어">
+        <button class="player-fab" id="langFab" aria-label="설정 / 자막 언어">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="6" x2="8" y2="3"/><line x1="8" y1="6" x2="8" y2="9"/><line x1="4" y1="18" x2="20" y2="18"/><line x1="16" y1="18" x2="16" y2="15"/><line x1="16" y1="18" x2="16" y2="21"/></svg>
         </button>
         <button class="player-fab" id="exitFab" aria-label="나가기">
@@ -283,7 +327,12 @@ export function renderPlayer(params, root) {
       </div>
 
       <div class="lang-panel" id="langPanel">
-        <div class="lang-panel-title">자막 언어</div>
+        <div class="lang-panel-title">${escapeHtml(title)}</div>
+        <div class="lang-panel-meta">
+          ${isLive ? `<div class="live-chip"><span class="live-dot"></span>LIVE</div>` : ''}
+          <span class="meta-text">${escapeHtml(artist)} · Kaptik 실시간 자막</span>
+        </div>
+        <div class="lang-panel-divider"></div>
         <select id="langSelect" class="lang-select">
           ${LANGUAGES.map((l) => `<option value="${l.code}" ${l.code === currentLang ? 'selected' : ''}>${l.label}</option>`).join('')}
         </select>
@@ -310,36 +359,46 @@ export function renderPlayer(params, root) {
     applySheetTop(h + 6);
   });
 
-  // ── 이벤트 바인딩 ──
+  // 이벤트
   bindSheetDrag();
   bindScroll();
-  bindLang();
+  bindLang(root);
   root.querySelector('#exitFab').addEventListener('click', () => navigate('home'));
   updateScrollToTopLabel();
 
-  // ── YouTube 플레이어 ──
-  whenYTReady(() => {
-    ytPlayer = new window.YT.Player('yt-player', {
-      videoId: DEMO_VIDEO.youtubeId,
-      // mute:1 — 브라우저 자동재생 정책상 음소거여야 자동 시작됨(자막이 흐르도록).
-      // 사용자는 영상 컨트롤에서 음소거를 해제할 수 있다.
-      playerVars: { autoplay: 1, mute: 1, playsinline: 1, rel: 0, modestbranding: 1 },
-      events: {
-        onReady: (e) => { e.target.playVideo(); startPolling(); },
-      },
-    });
-  });
+  // 컨트롤러 생성
+  if (isYouTube) {
+    controller = makeYouTubeController(source.youtubeId, () => startPolling());
+  } else {
+    controller = makeMockController();
+    bindMockControls(root);
+    startPolling();
+  }
 
-  // 정리 함수
   return cleanup;
 }
 
-/* ── 폴링: 영상 시간 → 자막 동기화 ── */
+/* ── 목업 영상 영역 재생/일시정지 ── */
+function bindMockControls(root) {
+  const mockVideo = root.querySelector('#mockVideo');
+  const btn = root.querySelector('#mockPlay');
+  if (!mockVideo || !btn) return;
+  const playIco = '<svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+  const pauseIco = '<svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
+  const toggle = () => {
+    if (!controller) return;
+    if (controller.isRunning()) { controller.pause(); btn.innerHTML = playIco; mockVideo.classList.add('paused'); }
+    else { controller.play(); btn.innerHTML = pauseIco; mockVideo.classList.remove('paused'); }
+  };
+  btn.addEventListener('click', (e) => { e.stopPropagation(); toggle(); });
+}
+
+/* ── 폴링: 컨트롤러 시간 → 자막 동기화 ── */
 function startPolling() {
   stopPolling();
   pollTimer = setInterval(() => {
-    if (!ytPlayer || typeof ytPlayer.getCurrentTime !== 'function') return;
-    const t = ytPlayer.getCurrentTime();
+    if (!controller) return;
+    const t = controller.getTime();
     if (typeof t === 'number') updateSubtitle(t);
   }, 120);
 }
@@ -354,33 +413,16 @@ function bindSheetDrag() {
     if (relY < DRAG_ZONE) { isDragging = true; dragStartY = e.touches[0].clientY; dragStartTop = sheetTop; e.preventDefault(); }
     else isDragging = false;
   }, { passive: false });
-  // 그립 영역도 드래그
-  sheet.querySelector('.sheet-grip').addEventListener('touchstart', (e) => {
-    isDragging = true; dragStartY = e.touches[0].clientY; dragStartTop = sheetTop; e.preventDefault();
-  }, { passive: false });
 
   const onMove = (e) => {
     if (!isDragging) return;
-    const delta = e.touches[0].clientY - dragStartY;
-    applySheetTop(dragStartTop + delta);
+    applySheetTop(dragStartTop + (e.touches[0].clientY - dragStartY));
     e.preventDefault();
   };
   const onEnd = () => { isDragging = false; };
   document.addEventListener('touchmove', onMove, { passive: false });
   document.addEventListener('touchend', onEnd);
-  // cleanup에서 제거하기 위해 보관
   cleanup._drag = () => { document.removeEventListener('touchmove', onMove); document.removeEventListener('touchend', onEnd); };
-
-  // 마우스(데스크톱)에서도 그립 드래그 가능
-  const grip = sheet.querySelector('.sheet-grip');
-  let mDown = false;
-  grip.addEventListener('mousedown', (e) => { mDown = true; dragStartY = e.clientY; dragStartTop = sheetTop; e.preventDefault(); });
-  const mMove = (e) => { if (!mDown) return; applySheetTop(dragStartTop + (e.clientY - dragStartY)); };
-  const mUp = () => { mDown = false; };
-  document.addEventListener('mousemove', mMove);
-  document.addEventListener('mouseup', mUp);
-  const prevDragCleanup = cleanup._drag;
-  cleanup._drag = () => { prevDragCleanup(); document.removeEventListener('mousemove', mMove); document.removeEventListener('mouseup', mUp); };
 }
 
 function bindScroll() {
@@ -414,8 +456,8 @@ function flushPending() {
   if (diff > 0) sheetContent.scrollTop = prevTop + diff;
 }
 
-function bindLang() {
-  const langFab = sheet.parentElement.querySelector('#langFab');
+function bindLang(root) {
+  const langFab = root.querySelector('#langFab');
   langFab.addEventListener('click', (e) => { e.stopPropagation(); langPanel.classList.toggle('open'); });
   document.addEventListener('click', closeLangPanel);
   langPanel.addEventListener('click', (e) => e.stopPropagation());
@@ -434,6 +476,6 @@ function cleanup() {
   stopPolling();
   if (cleanup._drag) cleanup._drag();
   if (cleanup._lang) cleanup._lang();
-  if (ytPlayer && typeof ytPlayer.destroy === 'function') { try { ytPlayer.destroy(); } catch {} }
-  ytPlayer = null;
+  if (controller) controller.destroy();
+  controller = null;
 }
