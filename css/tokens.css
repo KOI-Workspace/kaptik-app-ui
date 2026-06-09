@@ -1,0 +1,77 @@
+/* Kaptik 디자인 토큰 — design.json / design.md 기반 공통 변수 */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+  /* ── 컬러 ── */
+  --brand:          #8353EB;
+  --brand-hover:    #7445DA;
+  --brand-active:   #6338C4;
+  --brand-soft:     rgba(131, 83, 235, 0.18);
+  --brand-glow:     rgba(131, 83, 235, 0.42);
+
+  --page:           #050505;
+  --surface:        #191919;   /* 카드 */
+  --surface-el:     #202020;   /* 네비/모달/포커스 카드 */
+
+  --text-1:         #FFFFFF;
+  --text-2:         #B7B7B7;
+  --text-3:         #7D7D7D;
+
+  --border:         rgba(255, 255, 255, 0.13);
+  --border-sub:     rgba(255, 255, 255, 0.08);
+
+  --notif:          #FF625C;
+
+  /* ── 라운드 ── */
+  --r-sm:           10px;
+  --r-md:           16px;
+  --r-lg:           24px;
+  --r-xl:           32px;
+  --r-card:         20px;
+  --r-panel:        24px;
+  --r-pill:         999px;
+
+  /* ── 그림자 ── */
+  --shadow-card:    0 8px 24px rgba(0, 0, 0, 0.28);
+  --shadow-nav:     0 10px 30px rgba(0, 0, 0, 0.50);
+  --shadow-ai:      0 12px 36px rgba(131, 83, 235, 0.45);
+
+  /* ── 타이포 ── */
+  --font:           'Inter', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+
+  /* ── 레이아웃 ── */
+  --app-max:        430px;
+  --nav-h:          72px;
+  --nav-bottom-gap: 12px;
+  --content-pad:    20px;
+
+  /* ── 모션 ── */
+  --ease:           cubic-bezier(0.4, 0, 0.2, 1);
+  --t-fast:         160ms;
+  --t-base:         180ms;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  background: var(--page);
+  color: var(--text-1);
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 앱 컨테이너 — 모바일 폭 중앙 정렬 */
+#app {
+  position: relative;
+  max-width: var(--app-max);
+  min-height: 100dvh;
+  margin: 0 auto;
+  overflow-x: hidden;
+}
+
+button { font-family: inherit; }
+a { color: inherit; }
+
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+@keyframes spin  { to { transform: rotate(360deg); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
