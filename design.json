@@ -1,0 +1,888 @@
+{
+  "meta": {
+    "name": "Kaptik Weverse-inspired UI Design System",
+    "version": "1.0.0",
+    "generatedFor": "HTML/CSS/JavaScript implementation",
+    "principle": "Dark, mobile-first, fandom media app UI inspired by the provided reference screens, with Kaptik brand accent changed to purple #8353EB.",
+    "scope": [
+      "Home feed",
+      "Live/subtitle selection",
+      "Saved expressions/bookmarks",
+      "DM-like notification surface",
+      "Shop/payment entry",
+      "More/settings",
+      "Floating AI assistant entry",
+      "Modal/popup overlays"
+    ],
+    "nonGoals": [
+      "Do not copy copyrighted brand logos, artist images, or exact Weverse marks.",
+      "Do not hard-code user-generated content from the screenshots.",
+      "Use placeholder content and Kaptik-specific entities."
+    ]
+  },
+  "designSystem": {
+    "tokens": {
+      "colors": {
+        "brand": {
+          "primary": "#8353EB",
+          "primaryHover": "#7445DA",
+          "primaryActive": "#6338C4",
+          "primarySoft": "rgba(131,83,235,0.18)",
+          "primaryFaint": "rgba(131,83,235,0.10)",
+          "primaryBorder": "rgba(131,83,235,0.55)",
+          "primaryGlow": "rgba(131,83,235,0.45)"
+        },
+        "base": {
+          "black": "#000000",
+          "page": "#050505",
+          "surface": "#191919",
+          "surfaceElevated": "#202020",
+          "surfaceMuted": "#242424",
+          "surfaceLightMode": "#FFFFFF",
+          "overlay": "rgba(0,0,0,0.72)",
+          "scrim": "rgba(0,0,0,0.62)"
+        },
+        "text": {
+          "primary": "#FFFFFF",
+          "secondary": "#B7B7B7",
+          "tertiary": "#7D7D7D",
+          "disabled": "#4F4F4F",
+          "inverse": "#0B0B0B",
+          "onBrand": "#FFFFFF"
+        },
+        "border": {
+          "subtle": "rgba(255,255,255,0.08)",
+          "regular": "rgba(255,255,255,0.13)",
+          "strong": "rgba(255,255,255,0.20)",
+          "brand": "rgba(131,83,235,0.52)"
+        },
+        "status": {
+          "notification": "#FF625C",
+          "success": "#6BE28F",
+          "warning": "#FFCF66",
+          "locked": "#8A8A8A"
+        },
+        "icon": {
+          "default": "#FFFFFF",
+          "muted": "#A2A2A2",
+          "selected": "#FFFFFF",
+          "brand": "#8353EB",
+          "disabled": "#4B4B4B"
+        }
+      },
+      "typography": {
+        "fontFamily": {
+          "base": "Inter, Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+          "display": "Inter, Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+        },
+        "weights": {
+          "regular": 400,
+          "medium": 500,
+          "semibold": 650,
+          "bold": 800,
+          "black": 900
+        },
+        "scale": {
+          "hero": {
+            "fontSize": "40px",
+            "lineHeight": "1.02",
+            "fontWeight": 900,
+            "letterSpacing": "-0.045em"
+          },
+          "pageTitle": {
+            "fontSize": "28px",
+            "lineHeight": "1.15",
+            "fontWeight": 850,
+            "letterSpacing": "-0.035em"
+          },
+          "sectionTitle": {
+            "fontSize": "24px",
+            "lineHeight": "1.18",
+            "fontWeight": 850,
+            "letterSpacing": "-0.03em"
+          },
+          "cardTitle": {
+            "fontSize": "21px",
+            "lineHeight": "1.2",
+            "fontWeight": 850,
+            "letterSpacing": "-0.025em"
+          },
+          "body": {
+            "fontSize": "16px",
+            "lineHeight": "1.45",
+            "fontWeight": 500,
+            "letterSpacing": "-0.012em"
+          },
+          "bodyStrong": {
+            "fontSize": "16px",
+            "lineHeight": "1.35",
+            "fontWeight": 750,
+            "letterSpacing": "-0.015em"
+          },
+          "caption": {
+            "fontSize": "13px",
+            "lineHeight": "1.35",
+            "fontWeight": 600,
+            "letterSpacing": "-0.005em"
+          },
+          "micro": {
+            "fontSize": "11px",
+            "lineHeight": "1.25",
+            "fontWeight": 700,
+            "letterSpacing": "0.01em"
+          }
+        }
+      },
+      "layout": {
+        "viewport": {
+          "mobileWidth": "390px",
+          "maxAppWidth": "430px",
+          "safeAreaTop": "env(safe-area-inset-top)",
+          "safeAreaBottom": "env(safe-area-inset-bottom)"
+        },
+        "spacing": {
+          "xs": "6px",
+          "sm": "10px",
+          "md": "16px",
+          "lg": "22px",
+          "xl": "30px",
+          "xxl": "42px"
+        },
+        "radii": {
+          "xs": "8px",
+          "sm": "12px",
+          "md": "18px",
+          "lg": "24px",
+          "xl": "32px",
+          "pill": "999px",
+          "circle": "50%"
+        },
+        "zIndex": {
+          "base": 1,
+          "stickyHeader": 20,
+          "bottomNav": 50,
+          "floatingAction": 60,
+          "modalOverlay": 80,
+          "modal": 90,
+          "toast": 100
+        }
+      },
+      "effects": {
+        "shadows": {
+          "none": "none",
+          "card": "0 10px 28px rgba(0,0,0,0.32)",
+          "nav": "0 10px 30px rgba(0,0,0,0.50)",
+          "floating": "0 14px 38px rgba(0,0,0,0.48), 0 0 28px rgba(131,83,235,0.24)",
+          "modal": "0 24px 70px rgba(0,0,0,0.62)"
+        },
+        "blur": {
+          "glass": "blur(18px)",
+          "background": "blur(16px)"
+        },
+        "gradients": {
+          "brandOrb": "radial-gradient(circle at 30% 25%, #FFFFFF 0%, #BDA4FF 18%, #8353EB 48%, #55E0FF 78%, #7BFFE3 100%)",
+          "darkHero": "radial-gradient(circle at 50% 32%, rgba(131,83,235,0.42) 0%, rgba(131,83,235,0.14) 34%, rgba(0,0,0,0) 72%), linear-gradient(180deg, #121212 0%, #050505 100%)",
+          "cardDim": "linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.015) 100%)",
+          "mediaFade": "linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.74) 100%)",
+          "bottomNavGlass": "linear-gradient(180deg, rgba(42,42,42,0.78) 0%, rgba(22,22,22,0.86) 100%)"
+        },
+        "transitions": {
+          "fast": "120ms ease-out",
+          "normal": "180ms ease-out",
+          "slow": "280ms cubic-bezier(.2,.8,.2,1)"
+        }
+      }
+    },
+    "componentStyles": {
+      "appShell": {
+        "selector": ".kaptik-app",
+        "background": "#050505",
+        "color": "#FFFFFF",
+        "maxWidth": "430px",
+        "minHeight": "100dvh",
+        "margin": "0 auto",
+        "padding": "0 16px calc(112px + env(safe-area-inset-bottom))",
+        "overflowX": "hidden",
+        "rules": [
+          "Mobile-first single-column feed.",
+          "Black is the dominant base color; purple appears only as brand emphasis, selected states, badges, and primary CTAs.",
+          "Avoid pure white backgrounds except commerce/shop pages or intentional sheet surfaces."
+        ]
+      },
+      "statusHeader": {
+        "selector": ".top-header",
+        "height": "112px",
+        "display": "flex",
+        "alignItems": "flex-end",
+        "justifyContent": "space-between",
+        "padding": "calc(env(safe-area-inset-top) + 18px) 0 14px",
+        "background": "#050505",
+        "position": "sticky",
+        "top": "0",
+        "zIndex": 20,
+        "logoTreatment": {
+          "fontSize": "34px",
+          "fontWeight": 900,
+          "letterSpacing": "-0.06em",
+          "color": "#FFFFFF",
+          "textTransform": "none"
+        },
+        "notificationBadge": {
+          "background": "#FF625C",
+          "color": "#FFFFFF",
+          "borderRadius": "999px",
+          "fontSize": "13px",
+          "fontWeight": 800,
+          "padding": "3px 7px",
+          "position": "absolute",
+          "top": "-7px",
+          "right": "-11px"
+        }
+      },
+      "tabs": {
+        "selector": ".feed-tabs",
+        "container": {
+          "display": "flex",
+          "gap": "26px",
+          "height": "48px",
+          "alignItems": "center",
+          "borderBottom": "1px solid rgba(255,255,255,0.08)"
+        },
+        "item": {
+          "fontSize": "20px",
+          "fontWeight": 850,
+          "color": "#A0A0A0",
+          "paddingBottom": "11px",
+          "position": "relative",
+          "transition": "color 180ms ease-out"
+        },
+        "active": {
+          "color": "#FFFFFF",
+          "after": {
+            "height": "2px",
+            "background": "#FFFFFF",
+            "borderRadius": "999px",
+            "bottom": "0",
+            "left": "0",
+            "right": "0"
+          }
+        },
+        "specialTabIndicator": {
+          "dotColor": "#FF625C",
+          "dotSize": "5px",
+          "position": "top-right"
+        }
+      },
+      "section": {
+        "selector": ".section",
+        "marginTop": "28px",
+        "title": {
+          "fontSize": "24px",
+          "fontWeight": 900,
+          "lineHeight": "1.18",
+          "letterSpacing": "-0.035em",
+          "marginBottom": "16px"
+        }
+      },
+      "heroLiveCard": {
+        "selector": ".hero-live-card",
+        "background": "radial-gradient(circle at 50% 32%, rgba(131,83,235,0.42) 0%, rgba(131,83,235,0.14) 34%, rgba(0,0,0,0) 72%), linear-gradient(180deg, #121212 0%, #050505 100%)",
+        "border": "1px solid rgba(255,255,255,0.13)",
+        "borderRadius": "24px",
+        "height": "360px",
+        "padding": "26px",
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "center",
+        "justifyContent": "center",
+        "boxShadow": "0 10px 28px rgba(0,0,0,0.32)",
+        "label": {
+          "background": "rgba(0,0,0,0.58)",
+          "color": "#FFFFFF",
+          "borderRadius": "999px",
+          "padding": "9px 14px",
+          "fontSize": "13px",
+          "fontWeight": 850,
+          "alignSelf": "flex-start",
+          "marginBottom": "28px"
+        },
+        "artwork": {
+          "width": "112px",
+          "height": "112px",
+          "borderRadius": "30px",
+          "background": "#000000",
+          "boxShadow": "0 0 38px rgba(131,83,235,0.36)",
+          "iconColor": "#8353EB"
+        },
+        "title": {
+          "fontSize": "27px",
+          "fontWeight": 900,
+          "letterSpacing": "-0.04em",
+          "marginTop": "34px"
+        },
+        "metrics": {
+          "display": "flex",
+          "gap": "20px",
+          "color": "#B7B7B7",
+          "fontSize": "14px",
+          "fontWeight": 600,
+          "marginTop": "42px"
+        }
+      },
+      "horizontalMoments": {
+        "selector": ".moments-rail",
+        "background": "#202020",
+        "borderRadius": "20px",
+        "padding": "14px 14px 16px",
+        "overflowX": "auto",
+        "display": "flex",
+        "gap": "14px",
+        "item": {
+          "width": "112px",
+          "flex": "0 0 auto"
+        },
+        "thumbnail": {
+          "width": "112px",
+          "height": "150px",
+          "borderRadius": "12px",
+          "objectFit": "cover",
+          "background": "#2A2A2A"
+        },
+        "avatar": {
+          "width": "32px",
+          "height": "32px",
+          "borderRadius": "50%",
+          "border": "2px solid #8353EB",
+          "marginTop": "-8px",
+          "background": "#111111"
+        },
+        "name": {
+          "fontSize": "14px",
+          "fontWeight": 850,
+          "color": "#FFFFFF"
+        }
+      },
+      "feedCard": {
+        "selector": ".feed-card",
+        "background": "#202020",
+        "borderRadius": "20px",
+        "overflow": "hidden",
+        "border": "1px solid rgba(255,255,255,0.06)",
+        "boxShadow": "none",
+        "header": {
+          "display": "flex",
+          "alignItems": "center",
+          "gap": "12px",
+          "padding": "16px"
+        },
+        "avatar": {
+          "width": "44px",
+          "height": "44px",
+          "borderRadius": "50%",
+          "background": "#2C2C2C"
+        },
+        "verifiedBadge": {
+          "color": "#8353EB",
+          "size": "14px"
+        },
+        "bodyText": {
+          "color": "#FFFFFF",
+          "fontSize": "16px",
+          "lineHeight": "1.5",
+          "fontWeight": 500,
+          "padding": "0 16px 16px"
+        },
+        "media": {
+          "width": "100%",
+          "aspectRatio": "1 / 1.08",
+          "objectFit": "cover",
+          "background": "#111111"
+        },
+        "actions": {
+          "display": "flex",
+          "alignItems": "center",
+          "justifyContent": "space-between",
+          "padding": "13px 16px",
+          "borderTop": "1px solid rgba(255,255,255,0.08)",
+          "color": "#B7B7B7"
+        }
+      },
+      "noticeCard": {
+        "selector": ".notice-card",
+        "background": "#202020",
+        "borderRadius": "18px",
+        "padding": "18px",
+        "display": "flex",
+        "alignItems": "center",
+        "gap": "16px",
+        "titleColor": "#FFFFFF",
+        "metaColor": "#8B8B8B",
+        "descriptionColor": "#A7A7A7"
+      },
+      "dmPromptCard": {
+        "selector": ".dm-prompt-card",
+        "background": "#202020",
+        "borderRadius": "20px",
+        "overflow": "hidden",
+        "padding": "20px 0 0",
+        "primaryButton": {
+          "background": "#8353EB",
+          "hoverBackground": "#7445DA",
+          "color": "#FFFFFF",
+          "borderRadius": "14px",
+          "height": "50px",
+          "fontSize": "16px",
+          "fontWeight": 850,
+          "margin": "16px 20px"
+        },
+        "secondaryRow": {
+          "borderTop": "1px solid rgba(255,255,255,0.10)",
+          "height": "58px",
+          "display": "flex",
+          "alignItems": "center",
+          "justifyContent": "center",
+          "color": "#FFFFFF",
+          "fontSize": "16px",
+          "fontWeight": 700
+        }
+      },
+      "bottomNavigation": {
+        "selector": ".bottom-nav",
+        "position": "fixed",
+        "left": "50%",
+        "bottom": "calc(12px + env(safe-area-inset-bottom))",
+        "transform": "translateX(-50%)",
+        "width": "calc(min(430px, 100vw) - 34px)",
+        "height": "72px",
+        "background": "linear-gradient(180deg, rgba(42,42,42,0.78) 0%, rgba(22,22,22,0.86) 100%)",
+        "backdropFilter": "blur(18px)",
+        "border": "1px solid rgba(255,255,255,0.13)",
+        "borderRadius": "999px",
+        "boxShadow": "0 10px 30px rgba(0,0,0,0.50)",
+        "display": "grid",
+        "gridTemplateColumns": "repeat(4, 1fr)",
+        "padding": "7px",
+        "item": {
+          "borderRadius": "999px",
+          "color": "#FFFFFF",
+          "opacity": 0.92,
+          "display": "flex",
+          "flexDirection": "column",
+          "alignItems": "center",
+          "justifyContent": "center",
+          "gap": "4px",
+          "fontSize": "12px",
+          "fontWeight": 700
+        },
+        "active": {
+          "background": "rgba(255,255,255,0.16)",
+          "boxShadow": "inset 0 0 0 1px rgba(255,255,255,0.04)",
+          "color": "#FFFFFF"
+        }
+      },
+      "floatingAssistant": {
+        "selector": ".assistant-fab",
+        "position": "fixed",
+        "right": "calc((100vw - min(430px, 100vw))/2 + 18px)",
+        "bottom": "calc(20px + env(safe-area-inset-bottom))",
+        "width": "78px",
+        "height": "78px",
+        "borderRadius": "50%",
+        "background": "radial-gradient(circle at 30% 25%, #FFFFFF 0%, #BDA4FF 18%, #8353EB 48%, #55E0FF 78%, #7BFFE3 100%)",
+        "boxShadow": "0 14px 38px rgba(0,0,0,0.48), 0 0 28px rgba(131,83,235,0.24)",
+        "border": "1px solid rgba(255,255,255,0.28)",
+        "icon": {
+          "color": "#FFFFFF",
+          "size": "34px"
+        },
+        "note": "Keep this visually separated from the bottom nav; it floats above content and should not inherit nav active styles."
+      },
+      "shopPage": {
+        "selector": ".shop-page",
+        "background": "#FFFFFF",
+        "color": "#0B0B0B",
+        "header": {
+          "height": "88px",
+          "display": "flex",
+          "alignItems": "center",
+          "justifyContent": "space-between",
+          "padding": "0 16px",
+          "borderBottom": "1px solid #E8E8E8"
+        },
+        "locationBar": {
+          "height": "46px",
+          "display": "flex",
+          "alignItems": "center",
+          "gap": "8px",
+          "fontSize": "14px",
+          "color": "#333333"
+        },
+        "heroBanner": {
+          "borderRadius": "18px",
+          "overflow": "hidden",
+          "background": "linear-gradient(180deg, #8353EB 0%, #2B153F 100%)",
+          "height": "330px",
+          "color": "#FFFFFF"
+        },
+        "artistRail": {
+          "background": "#FFFFFF",
+          "borderRadius": "20px",
+          "boxShadow": "0 10px 28px rgba(0,0,0,0.10)",
+          "padding": "18px"
+        }
+      },
+      "moreSettings": {
+        "selector": ".more-card, .settings-card",
+        "background": "#191919",
+        "borderRadius": "22px",
+        "padding": "20px",
+        "border": "1px solid rgba(255,255,255,0.05)",
+        "row": {
+          "minHeight": "64px",
+          "display": "flex",
+          "alignItems": "center",
+          "justifyContent": "space-between",
+          "borderBottom": "1px solid rgba(255,255,255,0.08)"
+        },
+        "iconContainer": {
+          "width": "36px",
+          "height": "36px",
+          "borderRadius": "12px",
+          "background": "rgba(131,83,235,0.16)",
+          "color": "#8353EB"
+        },
+        "label": {
+          "fontSize": "18px",
+          "fontWeight": 600,
+          "color": "#FFFFFF"
+        },
+        "value": {
+          "fontSize": "17px",
+          "fontWeight": 600,
+          "color": "#9B9B9B"
+        }
+      },
+      "communityList": {
+        "selector": ".community-list",
+        "searchInput": {
+          "height": "48px",
+          "borderRadius": "999px",
+          "background": "#1C1C1C",
+          "border": "none",
+          "color": "#FFFFFF",
+          "padding": "0 18px",
+          "placeholderColor": "#686868"
+        },
+        "chip": {
+          "height": "40px",
+          "borderRadius": "999px",
+          "background": "transparent",
+          "border": "1px solid rgba(255,255,255,0.16)",
+          "color": "#FFFFFF",
+          "padding": "0 16px",
+          "fontWeight": 700
+        },
+        "chipActive": {
+          "background": "#FFFFFF",
+          "color": "#000000"
+        },
+        "joinButton": {
+          "background": "#8353EB",
+          "color": "#FFFFFF",
+          "height": "40px",
+          "borderRadius": "999px",
+          "padding": "0 18px",
+          "fontWeight": 850
+        }
+      },
+      "modalPopup": {
+        "selector": ".modal, .event-popup",
+        "overlay": {
+          "background": "rgba(0,0,0,0.72)",
+          "backdropFilter": "blur(16px)"
+        },
+        "container": {
+          "width": "calc(100% - 56px)",
+          "maxWidth": "340px",
+          "borderRadius": "24px",
+          "background": "#F1F1F1",
+          "color": "#000000",
+          "boxShadow": "0 24px 70px rgba(0,0,0,0.62)",
+          "overflow": "hidden"
+        },
+        "primaryButton": {
+          "height": "56px",
+          "borderRadius": "8px",
+          "background": "#000000",
+          "color": "#FFFFFF",
+          "fontWeight": 850
+        },
+        "bottomActions": {
+          "color": "#FFFFFF",
+          "fontSize": "16px",
+          "fontWeight": 750,
+          "gap": "28px",
+          "marginTop": "18px"
+        }
+      },
+      "subtitlePlayer": {
+        "selector": ".subtitle-player",
+        "background": "#000000",
+        "videoArea": {
+          "aspectRatio": "16 / 9",
+          "background": "#111111",
+          "borderRadius": "18px",
+          "overflow": "hidden",
+          "position": "relative"
+        },
+        "subtitleOverlay": {
+          "position": "absolute",
+          "left": "16px",
+          "right": "16px",
+          "bottom": "18px",
+          "background": "rgba(0,0,0,0.62)",
+          "backdropFilter": "blur(10px)",
+          "borderRadius": "16px",
+          "padding": "14px",
+          "border": "1px solid rgba(255,255,255,0.12)"
+        },
+        "speakerLabel": {
+          "color": "#8353EB",
+          "fontSize": "13px",
+          "fontWeight": 850,
+          "marginBottom": "4px"
+        },
+        "subtitleText": {
+          "color": "#FFFFFF",
+          "fontSize": "18px",
+          "fontWeight": 750,
+          "lineHeight": "1.35"
+        },
+        "translationText": {
+          "color": "#D8D8D8",
+          "fontSize": "15px",
+          "fontWeight": 500,
+          "lineHeight": "1.4",
+          "marginTop": "6px"
+        },
+        "contextNote": {
+          "background": "rgba(131,83,235,0.16)",
+          "border": "1px solid rgba(131,83,235,0.35)",
+          "borderRadius": "14px",
+          "padding": "10px 12px",
+          "color": "#FFFFFF",
+          "fontSize": "13px",
+          "marginTop": "10px"
+        }
+      }
+    },
+    "stateArchitecture": {
+      "buttons": {
+        "primary": {
+          "default": {
+            "background": "#8353EB",
+            "color": "#FFFFFF",
+            "transform": "none"
+          },
+          "hover": {
+            "background": "#7445DA",
+            "transform": "translateY(-1px)"
+          },
+          "active": {
+            "background": "#6338C4",
+            "transform": "scale(0.98)"
+          },
+          "disabled": {
+            "background": "#2A2A2A",
+            "color": "#6C6C6C",
+            "cursor": "not-allowed"
+          }
+        },
+        "secondaryDark": {
+          "default": {
+            "background": "#202020",
+            "color": "#FFFFFF",
+            "border": "1px solid rgba(255,255,255,0.13)"
+          },
+          "hover": {
+            "background": "#282828"
+          },
+          "active": {
+            "background": "#151515"
+          }
+        },
+        "ghost": {
+          "default": {
+            "background": "transparent",
+            "color": "#B7B7B7"
+          },
+          "hover": {
+            "background": "rgba(255,255,255,0.06)",
+            "color": "#FFFFFF"
+          },
+          "active": {
+            "background": "rgba(131,83,235,0.14)",
+            "color": "#FFFFFF"
+          }
+        }
+      },
+      "cards": {
+        "default": {
+          "background": "#202020",
+          "border": "1px solid rgba(255,255,255,0.06)"
+        },
+        "hover": {
+          "border": "1px solid rgba(255,255,255,0.14)",
+          "transform": "translateY(-1px)"
+        },
+        "selected": {
+          "border": "1px solid rgba(131,83,235,0.52)",
+          "boxShadow": "0 0 0 3px rgba(131,83,235,0.10)"
+        },
+        "loading": {
+          "background": "linear-gradient(90deg, #181818 0%, #242424 50%, #181818 100%)",
+          "animation": "skeletonShimmer 1.2s infinite linear"
+        }
+      },
+      "inputs": {
+        "default": {
+          "background": "#1C1C1C",
+          "border": "1px solid transparent",
+          "color": "#FFFFFF"
+        },
+        "focus": {
+          "border": "1px solid rgba(131,83,235,0.75)",
+          "boxShadow": "0 0 0 3px rgba(131,83,235,0.16)"
+        },
+        "error": {
+          "border": "1px solid #FF625C",
+          "boxShadow": "0 0 0 3px rgba(255,98,92,0.14)"
+        },
+        "disabled": {
+          "background": "#101010",
+          "color": "#555555"
+        }
+      }
+    },
+    "responsiveRules": {
+      "mobile": {
+        "range": "0px-430px",
+        "rules": [
+          "Use single-column layout.",
+          "Horizontal rails overflow with hidden scrollbars.",
+          "Bottom navigation is fixed and pill-shaped.",
+          "Floating assistant button sits above bottom navigation on the right."
+        ]
+      },
+      "tabletDesktop": {
+        "range": "431px+",
+        "rules": [
+          "Keep app shell max-width at 430px for mobile-app fidelity.",
+          "Center app shell against black page background.",
+          "Do not stretch feed cards beyond mobile width unless a separate desktop design is created."
+        ]
+      }
+    },
+    "implementationGuidelines": {
+      "htmlStructure": [
+        "Use semantic sections: header, nav, main, section, article, button.",
+        "Use data-state attributes for active, selected, loading, disabled.",
+        "Separate fixed bottom navigation from page content to prevent accidental clipping."
+      ],
+      "cssArchitecture": [
+        "Define tokens as CSS variables at :root.",
+        "Map design tokens directly to utility classes and component classes.",
+        "Avoid applying brand gradient to every icon; reserve it for assistant FAB, hero glow, and selected premium surfaces.",
+        "Apply shadows to parent cards/nav containers, not individual text/media children.",
+        "Use #8353EB consistently for primary actions, active community indicators, speaker labels, and Kaptik AI emphasis."
+      ],
+      "javascriptBehavior": [
+        "Tab click switches visible feed section and toggles data-active.",
+        "Bottom nav click changes route/page panel without full reload in MVP.",
+        "Modal open adds body scroll lock and overlay; close restores scroll.",
+        "Subtitle player should support toggles for original Korean, translated subtitle, speaker label, and context note.",
+        "Live selection cards should expose aria-labels with artist/content title."
+      ],
+      "accessibility": {
+        "contrast": [
+          {
+            "pair": "#FFFFFF on #050505",
+            "result": "AAA"
+          },
+          {
+            "pair": "#B7B7B7 on #050505",
+            "result": "AA for normal text"
+          },
+          {
+            "pair": "#FFFFFF on #8353EB",
+            "result": "AA for large/bold CTA text; prefer semibold/bold"
+          },
+          {
+            "pair": "#8353EB on #050505",
+            "result": "Use for labels/icons, not long paragraph text"
+          }
+        ],
+        "rules": [
+          "Minimum tap target: 44x44px.",
+          "Do not rely only on color to indicate selected state; include underline, border, or filled container.",
+          "Provide aria-current for active nav and tabs.",
+          "Use visible focus ring with #8353EB."
+        ]
+      }
+    },
+    "cssVariables": {
+      "--color-brand": "#8353EB",
+      "--color-brand-hover": "#7445DA",
+      "--color-black": "#000000",
+      "--color-page": "#050505",
+      "--color-surface": "#191919",
+      "--color-surface-elevated": "#202020",
+      "--color-text-primary": "#FFFFFF",
+      "--color-text-secondary": "#B7B7B7",
+      "--color-text-tertiary": "#7D7D7D",
+      "--color-border-subtle": "rgba(255,255,255,0.08)",
+      "--radius-card": "20px",
+      "--radius-panel": "24px",
+      "--radius-pill": "999px",
+      "--shadow-card": "0 10px 28px rgba(0,0,0,0.32)",
+      "--shadow-nav": "0 10px 30px rgba(0,0,0,0.50)",
+      "--font-base": "Inter, Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+    }
+  },
+  "sampleComponentMap": {
+    "Home": [
+      "top-header",
+      "feed-tabs",
+      "hero-live-card",
+      "moments-rail",
+      "dm-prompt-card",
+      "notice-card",
+      "feed-card",
+      "bottom-nav",
+      "assistant-fab"
+    ],
+    "LiveSubtitle": [
+      "top-header",
+      "subtitle-player",
+      "primary button",
+      "settings-card"
+    ],
+    "Shop": [
+      "shop-page",
+      "heroBanner",
+      "artistRail",
+      "bottom-nav"
+    ],
+    "DM": [
+      "dm-prompt-card",
+      "recommended list",
+      "bottom-nav"
+    ],
+    "More": [
+      "more-card",
+      "settings-card",
+      "modal-popup",
+      "bottom-nav"
+    ]
+  }
+}

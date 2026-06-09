@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh auth *)",
+      "Bash(gh repo *)",
+      "Bash(git init *)",
+      "Bash(git remote *)",
+      "Bash(git ls-remote *)",
+      "Bash(echo \"exit code: $?\")",
+      "Bash(git config *)",
+      "Bash(git add *)",
+      "Bash(git commit -m 'Initial commit *)",
+      "Bash(git push *)",
+      "Bash(git -C /Users/leehyunsoo/Dream/Kaptik/validation_video remote -v)",
+      "Bash(rsync -a --exclude=.DS_Store /Users/leehyunsoo/Dream/Kaptik/validation_video/weverse-demo/public/images/ /Users/leehyunsoo/Dream/Kaptik/kaptik-app-ui/public/images/)",
+      "Bash(git commit -q -m 'weverse-demo 목업 UI 코드 가져오기 *)"
+    ]
+  }
+}

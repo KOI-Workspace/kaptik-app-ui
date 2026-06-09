@@ -1,0 +1,376 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --brand:      #8353EB;
+  --page:       #000000;
+  --surface:    #191919;
+  --text-1:     #FFFFFF;
+  --text-2:     #B7B7B7;
+  --text-3:     #7D7D7D;
+  --border:     rgba(255,255,255,0.12);
+  --border-sub: rgba(255,255,255,0.07);
+  --notif:      #FF625C;
+  --r-pill:     999px;
+  --control-h:  56px;
+  --font:       'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+}
+
+body {
+  background: var(--page);
+  color: var(--text-1);
+  font-family: var(--font);
+  height: 100dvh;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* ── 바텀 시트 ── */
+.sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 45vh;          /* JS 제어 */
+  bottom: var(--control-h);
+  background: rgba(8,8,8,0.97);
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  border-top: 1px solid var(--border-sub);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  will-change: top;
+}
+.sheet.animating {
+  transition: top 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+/* 자막 콘텐츠 영역 */
+.sheet-content {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(to bottom, black 72%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 72%, transparent 100%);
+  overflow-anchor: none; /* scrollTop 수동 보정을 위해 자동 앵커 비활성화 */
+}
+.sheet-content::-webkit-scrollbar { display: none; }
+
+/* 자막 리스트 (패딩으로 간격) */
+.subtitle-list {
+  padding: 4px 20px 60px;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0;
+}
+
+/* 자막 아이템 — row + 카드 수직 스택 */
+.subtitle-item {
+  padding: 10px 0;
+}
+
+.subtitle-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.subtitle-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  margin-top: 1px;
+  overflow: hidden;
+}
+
+.subtitle-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.subtitle-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.subtitle-name {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  margin-bottom: 5px;
+}
+
+.subtitle-text {
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.88);
+  letter-spacing: -0.01em;
+}
+
+.annotated-word {
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+  font-weight: 600;
+  transition: opacity 0.2s ease;
+}
+.annotated-word:active {
+  opacity: 0.8;
+}
+
+/* ── 문화맥락 해설 인라인 카드 ── */
+.context-inline-card {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.32s ease-out, opacity 0.22s ease-out;
+  margin-top: 10px;
+  padding-left: 50px;
+}
+.context-inline-card.open {
+  max-height: 300px;
+  opacity: 1;
+}
+.context-inline-card-inner {
+  background: rgba(16,10,32,0.97);
+  border: 1px solid rgba(131,83,235,0.35);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 6px;
+}
+
+.context-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.context-card-title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.context-card-close {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.3);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.context-card-body {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.65;
+  color: rgba(255,255,255,0.72);
+  user-select: text;
+}
+
+/* ── 최신으로 이동 버튼 (시트 상단 중앙) ── */
+.scroll-to-top-btn {
+  display: none;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 30px;
+  padding: 0 14px;
+  border-radius: var(--r-pill);
+  background: rgba(40,40,40,0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  color: var(--text-1);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  z-index: 210;
+}
+.scroll-to-top-btn.visible { display: flex; }
+
+/* ── FAB 그룹 (세로 정렬) ── */
+.fab-group {
+  position: fixed;
+  right: 16px;
+  bottom: calc(var(--control-h) + 14px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 300;
+}
+
+.lang-fab {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(22,22,22,0.9);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: rgba(255,255,255,0.75);
+}
+
+.exit-fab {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(22,22,22,0.9);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+}
+
+/* ── 언어/정보 팝업 ── */
+.lang-panel {
+  position: fixed;
+  right: 14px;
+  bottom: calc(var(--control-h) + 118px);
+  width: 220px;
+  background: rgba(16,16,16,0.97);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px 14px 12px;
+  backdrop-filter: blur(18px);
+  z-index: 400;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  opacity: 0;
+  transform: translateY(6px) scale(0.96);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  transform-origin: bottom right;
+}
+.lang-panel.open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: all;
+}
+
+.lang-panel-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-1);
+  line-height: 1.4;
+}
+
+.lang-panel-meta { display: flex; align-items: center; gap: 7px; }
+.lang-panel-divider { height: 1px; background: var(--border-sub); }
+
+.live-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255,98,92,0.12);
+  border: 1px solid rgba(255,98,92,0.3);
+  border-radius: var(--r-pill);
+  padding: 3px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--notif);
+  letter-spacing: 0.4px;
+}
+
+.live-dot {
+  width: 5px; height: 5px;
+  background: var(--notif);
+  border-radius: 50%;
+  animation: blink 1.2s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+.meta-text { font-size: 12px; font-weight: 400; color: var(--text-3); }
+
+.lang-select {
+  background: var(--surface);
+  color: var(--text-1);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 6px 28px 6px 10px;
+  font-size: 13px;
+  font-weight: 400;
+  font-family: var(--font);
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(255,255,255,0.35)'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 9px center;
+  width: 100%;
+}
+.lang-select option { background: #1a1a1a; color: var(--text-1); }
+
+/* ── 컨트롤 바 ── */
+.control-bar {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  height: var(--control-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 20px;
+  background: rgba(12,12,12,0.97);
+  border-top: 1px solid var(--border-sub);
+  z-index: 400;
+}
+
+.start-btn {
+  background: var(--brand);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-pill);
+  padding: 9px 26px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: background 180ms, transform 120ms;
+}
+.start-btn:active { transform: scale(0.97); }
+.start-btn.running { background: var(--notif); }
+
+.reset-btn {
+  background: var(--surface);
+  color: var(--text-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  padding: 9px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: var(--font);
+  cursor: pointer;
+}
+.reset-btn:active { background: #222; }
