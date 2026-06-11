@@ -58,6 +58,42 @@
 }
 .sheet-content::-webkit-scrollbar { display: none; }
 
+.subtitle-status {
+  min-height: 116px;
+  padding: 28px 24px 22px;
+  display: flex; align-items: center; gap: 14px;
+  color: var(--text-1);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.subtitle-status.ready {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+.subtitle-status-indicator {
+  width: 38px; height: 38px; border-radius: 12px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; gap: 3px;
+  background: rgba(131, 83, 235, 0.14);
+  border: 1px solid rgba(131, 83, 235, 0.28);
+}
+.subtitle-status-indicator span {
+  width: 3px; height: 12px; border-radius: 3px;
+  background: var(--brand);
+  animation: subtitleWave 0.9s ease-in-out infinite;
+}
+.subtitle-status-indicator span:nth-child(2) { animation-delay: 0.15s; }
+.subtitle-status-indicator span:nth-child(3) { animation-delay: 0.3s; }
+.subtitle-status.ready .subtitle-status-indicator span {
+  animation: none;
+  height: 3px;
+}
+@keyframes subtitleWave {
+  0%, 100% { transform: scaleY(0.45); opacity: 0.55; }
+  50% { transform: scaleY(1); opacity: 1; }
+}
+.subtitle-status-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.subtitle-status-desc { font-size: 12px; font-weight: 500; color: var(--text-3); line-height: 1.5; }
+
 .subtitle-list { padding: 4px 20px 60px; display: flex; flex-direction: column-reverse; gap: 0; }
 
 .subtitle-item { padding: 10px 0; }

@@ -21,7 +21,9 @@ import {
 let sheet, sheetContent, subtitleList, scrollToTopBtn, langPanel, langSelect;
 let controller = null;      // { getTime, seekTo, play, pause, isRunning, destroy }
 let pollTimer = null;
+let subtitleReadyTimer = null;
 let currentLang = 'en';
+let subtitlesReady = true;
 
 let history = [];
 let lastSubtitleStart = -1;
@@ -169,6 +171,7 @@ function rebuildHistoryUpTo(time) {
 }
 
 function updateSubtitle(t) {
+  if (!subtitlesReady) return;
   const cur = SUBTITLES.find((s) => t >= s.start && t < s.end);
   if (!cur) return;
   if (cur.start === lastSubtitleStart) return;
@@ -222,6 +225,25 @@ function prependSubtitle(item) {
 function rerenderAll() {
   subtitleList.innerHTML = '';
   history.forEach((item) => subtitleList.appendChild(createSubtitleEl(item)));
+}
+
+/** 자막 준비 완료 시 현재 재생 구간부터 자막을 시작한다. */
+function finishSubtitlePreparation(statusEl) {
+  if (!controller || !statusEl) return;
+  subtitlesReady = true;
+  statusEl.classList.add('ready');
+  statusEl.querySelector('.subtitle-status-title').textContent = t('player.subtitleReady');
+  statusEl.querySelector('.subtitle-status-desc').textContent = t('player.subtitleReadyDesc');
+
+  const currentTime = controller.getTime();
+  const currentSubtitle = SUBTITLES.find((item) => currentTime >= item.start && currentTime < item.end);
+  if (currentSubtitle) {
+    lastSubtitleStart = currentSubtitle.start;
+    history = [currentSubtitle];
+    prependSubtitle(currentSubtitle);
+  }
+
+  setTimeout(() => statusEl.remove(), 700);
 }
 
 /* ── 문화맥락 해설 ── */
@@ -306,6 +328,7 @@ export function renderPlayer(params, root) {
   history = []; lastSubtitleStart = -1; pendingItems.length = 0;
   isUserScrolled = false; isScrolling = false;
   currentLang = getState().defaultLang || 'en';
+  subtitlesReady = !(params && params.subtitlePending);
 
   root.innerHTML = `
     <div class="player-view view fullscreen">
@@ -315,7 +338,19 @@ export function renderPlayer(params, root) {
 
       <div class="sheet" id="sheet">
         <button class="scroll-to-top-btn" id="scrollToTopBtn">${t('player.latest')}</button>
-        <div class="sheet-content" id="sheetContent"></div>
+        <div class="sheet-content" id="sheetContent">
+          ${subtitlesReady ? '' : `
+            <div class="subtitle-status" id="subtitleStatus" role="status" aria-live="polite">
+              <div class="subtitle-status-indicator" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </div>
+              <div>
+                <div class="subtitle-status-title">${t('player.subtitlePreparing')}</div>
+                <div class="subtitle-status-desc">${t('player.subtitlePreparingDesc')}</div>
+              </div>
+            </div>
+          `}
+        </div>
       </div>
 
       <div class="fab-group">
@@ -351,6 +386,12 @@ export function renderPlayer(params, root) {
   subtitleList = document.createElement('div');
   subtitleList.className = 'subtitle-list';
   sheetContent.appendChild(subtitleList);
+
+  if (!subtitlesReady) {
+    const statusEl = root.querySelector('#subtitleStatus');
+    const delay = Math.max(0, Number(params.subtitleDelayMs) || 4000);
+    subtitleReadyTimer = setTimeout(() => finishSubtitlePreparation(statusEl), delay);
+  }
 
   // 시트 초기 위치 — 영상 영역 바로 아래
   const videoArea = root.querySelector('#videoArea');
@@ -475,6 +516,10 @@ function closeLangPanel() { if (langPanel) langPanel.classList.remove('open'); }
 /* ── 뷰 정리 ── */
 function cleanup() {
   stopPolling();
+  if (subtitleReadyTimer) {
+    clearTimeout(subtitleReadyTimer);
+    subtitleReadyTimer = null;
+  }
   if (cleanup._drag) cleanup._drag();
   if (cleanup._lang) cleanup._lang();
   if (controller) controller.destroy();

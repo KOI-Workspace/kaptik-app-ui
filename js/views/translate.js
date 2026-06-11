@@ -1,12 +1,11 @@
 /**
  * Translate 화면 — Immersive Translate 참고
  * - URL 입력 + 플랫폼 바로가기(Weverse / YouTube / X / Instagram)
- * - 제출 시 로그인/결제 게이트 → Processing 로딩 → Player + 완료 알림
+ * - 제출 시 로그인/결제 게이트 → Player 즉시 재생 + 자막 비동기 생성
  */
 import { headerHTML, bindHeader } from '../ui.js';
 import { navigate } from '../router.js';
 import { requireAccess } from '../gate.js';
-import { showProcessing, toast } from '../modals.js';
 import { t } from '../i18n.js';
 
 /* 플랫폼 정의 (Weverse 로고 복제 금지 → 심볼/컬러로 표현) */
@@ -26,12 +25,12 @@ function detectPlatform(url) {
   return 'weverse';
 }
 
-/** 게이트 통과 후 번역 시작 → Processing → Player */
+/** 게이트 통과 후 영상을 즉시 재생하고 자막은 Player에서 준비한다. */
 function startTranslation(platform) {
   requireAccess(() => {
-    showProcessing(platform, () => {
-      toast({ title: t('toast.translateDone.title'), sub: t('toast.translateDone.sub'), type: 'check' });
-      navigate('player', { feed: null });
+    navigate('player', {
+      subtitlePending: true,
+      subtitleDelayMs: platform === 'youtube' ? 3200 : 5200,
     });
   }, { need: 'pro' });
 }
