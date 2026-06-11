@@ -20,7 +20,8 @@
       "Bash(node --input-type=module --check)",
       "Bash(curl -s -o /dev/null -w \"index.html %{http_code}\\\\n\" http://127.0.0.1:8000/index.html)",
       "Bash(curl *)",
-      "Bash(echo \"exit:$?\")"
+      "Bash(echo \"exit:$?\")",
+      "Bash(pkill -f \"http.server 8000\")"
     ]
   }
 }
