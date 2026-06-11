@@ -24,11 +24,12 @@ const CHECK = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" strok
 export function renderOnboarding(_params, root) {
   // 단계: 'auth' → 'personalize' → 'plan'
   let step = 'auth';
-  let authMode = 'signin';   // auth 단계 내부 모드
-  let upsell = false;        // plan 단계가 기존 유저 업셀인지
-  let chosenPlan = 'pro';    // plan 단계 선택값
-  let countdownTimer = null; // plan 단계 X 버튼 카운트다운
-  // 회원가입 동의 — tos·privacy 필수, marketing 선택 (스텝 재렌더에도 유지)
+  // auth 내부 서브스텝: 'main'(Google+Email 버튼) | 'email'(이메일 폼)
+  let authSubStep = 'main';
+  let authMode = 'signin';   // email 서브스텝 내 모드
+  let upsell = false;
+  let chosenPlan = 'pro';
+  let countdownTimer = null;
   const agree = { tos: false, privacy: false, marketing: false };
 
   const clearCountdown = () => { if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; } };
@@ -40,35 +41,73 @@ export function renderOnboarding(_params, root) {
     navigate('home');
   };
 
-  /* 로그인/회원가입 성공 후 분기 */
   const afterAuth = (isNew) => {
     if (isNew) { step = 'personalize'; render(); return; }
-    // 기존 유저: Pro면 바로 홈, 아니면 결제 유도
     if (getState().plan === 'pro') { finish(); return; }
     upsell = true; step = 'plan'; render();
   };
 
-  /* ── 1) 로그인 / 회원가입 ── */
-  function renderAuth() {
-    const isSignup = authMode === 'signup';
+  /* ── 1-A) 인증 메인: Google + Email 버튼 ── */
+  function renderAuthMain() {
     root.innerHTML = `
       <div class="onb view fullscreen">
-        <div class="onb-body">
-          <div class="logo" style="font-size:34px;margin-bottom:10px;">kap<span>tik</span></div>
+        <div class="onb-body onb-auth-main">
+          <div class="logo onb-logo">kap<span>tik</span></div>
           <h1 class="onb-title">${t('onb.auth.title')}</h1>
           <p class="onb-sub">${t('onb.auth.sub')}</p>
 
-          <div class="seg auth-seg" role="group">
-            <button class="seg-btn ${!isSignup ? 'on' : ''}" data-mode="signin">${t('login.signin')}</button>
-            <button class="seg-btn ${isSignup ? 'on' : ''}" data-mode="signup">${t('login.signup')}</button>
+          <div class="onb-auth-btns">
+            <button class="btn-google btn-auth-pill" id="googleBtn">
+              ${GOOGLE_SVG} ${t('login.googleContinue')}
+            </button>
+            <button class="btn-auth-pill btn-auth-email" id="emailBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>
+              ${t('login.emailContinue')}
+            </button>
           </div>
 
-          <button class="btn-google" id="googleBtn" style="margin-bottom:16px;">
-            ${GOOGLE_SVG} ${isSignup ? t('login.googleStart') : t('login.googleContinue')}
-          </button>
+          <p class="onb-terms" id="termsText"></p>
+        </div>
+      </div>
+    `;
 
-          <div class="login-divider">${isSignup ? t('login.orEmailSignup') : t('login.orEmailLogin')}</div>
+    // innerHTML로 설정해야 <a> 태그가 렌더링됨
+    root.querySelector('#termsText').innerHTML = t('login.terms');
+    root.querySelectorAll('.terms-link').forEach((a) => {
+      a.addEventListener('click', (e) => { e.preventDefault(); openLegalDoc(a.dataset.doc); });
+    });
 
+    root.querySelector('#googleBtn').addEventListener('click', () => {
+      const r = signInWithGoogle();
+      afterAuth(r.isNew);
+    });
+    root.querySelector('#emailBtn').addEventListener('click', () => {
+      authSubStep = 'email';
+      renderAuth();
+    });
+  }
+
+  /* ── 1-B) 이메일 폼: 로그인 / 회원가입 탭 ── */
+  function renderEmailForm() {
+    const isSignup = authMode === 'signup';
+    root.innerHTML = `
+      <div class="onb view fullscreen">
+        <div class="onb-body scroll">
+          <div class="onb-email-head">
+            <button class="onb-back" id="backBtn" aria-label="${t('aria.back')}">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <div class="seg auth-seg" role="group" style="flex:1;">
+              <button class="seg-btn ${!isSignup ? 'on' : ''}" data-mode="signin">${t('login.signin')}</button>
+              <button class="seg-btn ${isSignup ? 'on' : ''}" data-mode="signup">${t('login.signup')}</button>
+            </div>
+          </div>
+
+          ${isSignup ? `
+          <div class="field" data-field="name">
+            <input type="text" id="name" placeholder="${t('login.ph.name')}" autocomplete="name" />
+            <p class="field-error"></p>
+          </div>` : ''}
           <div class="field" data-field="email">
             <input type="email" id="email" placeholder="${t('login.ph.email')}" autocomplete="email" inputmode="email" />
             <p class="field-error"></p>
@@ -105,12 +144,15 @@ export function renderOnboarding(_params, root) {
             </div>
           </div>` : ''}
 
-          <button class="btn-primary" id="submitBtn" style="margin-top:6px;">${isSignup ? t('login.signup') : t('login.signin')}</button>
-          ${isSignup ? '' : `<p class="onb-terms">${t('login.terms')}</p>`}
+          <button class="btn-primary" id="submitBtn" style="margin-top:10px;">${isSignup ? t('login.signup') : t('login.signin')}</button>
         </div>
       </div>
     `;
 
+    root.querySelector('#backBtn').addEventListener('click', () => {
+      authSubStep = 'main';
+      renderAuth();
+    });
     root.querySelectorAll('.auth-seg .seg-btn').forEach((btn) => {
       btn.addEventListener('click', () => { authMode = btn.dataset.mode; renderAuth(); });
     });
@@ -118,7 +160,6 @@ export function renderOnboarding(_params, root) {
       inp.addEventListener('input', () => inp.closest('.field')?.classList.remove('invalid'));
     });
 
-    // 동의 체크박스 (회원가입 모드)
     if (isSignup) {
       root.querySelectorAll('[data-agree]').forEach((row) => {
         row.addEventListener('click', () => {
@@ -129,10 +170,9 @@ export function renderOnboarding(_params, root) {
           } else {
             agree[key] = !agree[key];
           }
-          renderAuth(); // 체크 상태 + 전체동의 + 버튼 활성화 갱신
+          renderAuth();
         });
       });
-      // '보기' 링크 → 약관 문서 (행 토글 막기)
       root.querySelectorAll('.agree-view').forEach((v) => {
         v.addEventListener('click', (e) => { e.stopPropagation(); openLegalDoc(v.dataset.doc); });
       });
@@ -146,28 +186,29 @@ export function renderOnboarding(_params, root) {
       wrap.querySelector('input')?.focus();
     };
 
-    root.querySelector('#googleBtn').addEventListener('click', () => {
-      const r = signInWithGoogle();
-      afterAuth(r.isNew);
-    });
     root.querySelector('#submitBtn').addEventListener('click', () => {
       root.querySelectorAll('.field.invalid').forEach((f) => f.classList.remove('invalid'));
-      // 회원가입은 필수 약관(이용약관·개인정보) 동의가 선행돼야 한다
       if (isSignup && !(agree.tos && agree.privacy)) {
         toast({ title: t('err.agreeRequired'), type: 'warn' });
         root.querySelector('#agreeBox')?.classList.add('shake');
         setTimeout(() => root.querySelector('#agreeBox')?.classList.remove('shake'), 400);
         return;
       }
+      const name = isSignup ? (root.querySelector('#name')?.value || '') : '';
       const email = root.querySelector('#email').value;
       const password = root.querySelector('#pw').value;
       const confirm = isSignup ? root.querySelector('#pw2').value : '';
-      const r = isSignup ? signUp({ email, password, confirm }) : signIn({ email, password });
+      const r = isSignup ? signUp({ email, password, confirm, name }) : signIn({ email, password });
       if (!r.ok) { showError(r.field, r.key); return; }
-      // 가입 성공 시 동의 내역 저장 (필수는 동의 완료, 마케팅은 선택값)
       if (isSignup) setState({ agreements: { tos: true, privacy: true, marketing: agree.marketing } });
       afterAuth(r.isNew);
     });
+  }
+
+  /* ── 1) 인증 단계 진입점 ── */
+  function renderAuth() {
+    if (authSubStep === 'email') renderEmailForm();
+    else renderAuthMain();
   }
 
   /* ── 2) 아티스트 + 언어 선택 (신규 전용) ── */

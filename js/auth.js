@@ -13,7 +13,9 @@ import { startSession } from './state.js';
 
 const ACCOUNTS_KEY = 'kaptik.accounts.v1';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const MIN_PW = 6;
+const MIN_PW = 8;
+// 영문(대소문자) + 숫자 각 1자 이상 포함
+const PW_STRONG_RE = /^(?=.*[A-Za-z])(?=.*\d).+$/;
 
 /* ── 계정 저장소 ── */
 function loadAccounts() {
@@ -36,12 +38,20 @@ function nameFromEmail(email) {
 
 const fail = (field, key) => ({ ok: false, field, key });
 
-/* ── 공통 입력 검증 ── */
-function validateCredentials(email, password) {
+/* ── 입력 검증 헬퍼 ── */
+function validateEmail(email) {
   if (!email) return fail('email', 'err.emailRequired');
   if (!EMAIL_RE.test(email)) return fail('email', 'err.emailFormat');
+  return null;
+}
+// strict=true: 회원가입용 — 길이·복잡도까지 검사
+// strict=false: 로그인용 — 빈 값만 검사 (기존 계정 차단 방지)
+function validatePassword(password, strict = false) {
   if (!password) return fail('pw', 'err.pwRequired');
-  if (password.length < MIN_PW) return fail('pw', 'err.pwShort');
+  if (strict) {
+    if (password.length < MIN_PW) return fail('pw', 'err.pwShort');
+    if (!PW_STRONG_RE.test(password)) return fail('pw', 'err.pwWeak');
+  }
   return null;
 }
 
@@ -51,8 +61,10 @@ function validateCredentials(email, password) {
  */
 export function signUp({ email = '', password = '', confirm = '', name = '' } = {}) {
   email = email.trim();
-  const invalid = validateCredentials(email, password);
-  if (invalid) return invalid;
+  const invalidEmail = validateEmail(email);
+  if (invalidEmail) return invalidEmail;
+  const invalidPw = validatePassword(password, true);
+  if (invalidPw) return invalidPw;
   if (password !== confirm) return fail('confirm', 'err.pwMismatch');
   if (findAccount(email)) return fail('email', 'err.emailExists');
 
@@ -68,8 +80,10 @@ export function signUp({ email = '', password = '', confirm = '', name = '' } = 
  */
 export function signIn({ email = '', password = '' } = {}) {
   email = email.trim();
-  const invalid = validateCredentials(email, password);
-  if (invalid) return invalid;
+  const invalidEmail = validateEmail(email);
+  if (invalidEmail) return invalidEmail;
+  const invalidPw = validatePassword(password, false);
+  if (invalidPw) return invalidPw;
 
   const account = findAccount(email);
   if (!account) return fail('email', 'err.emailNotFound');
@@ -102,8 +116,11 @@ export function signInWithGoogle() {
  */
 export function quickAuth({ email = '', password = '' } = {}) {
   email = email.trim();
-  const invalid = validateCredentials(email, password);
-  if (invalid) return invalid;
+  const invalidEmail = validateEmail(email);
+  if (invalidEmail) return invalidEmail;
+  // quickAuth는 신규/기존 모두 처리하므로 복잡도 검사 적용
+  const invalidPw = validatePassword(password, true);
+  if (invalidPw) return invalidPw;
 
   return findAccount(email)
     ? signIn({ email, password })

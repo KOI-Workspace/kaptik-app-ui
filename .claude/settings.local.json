@@ -22,7 +22,9 @@
       "Bash(curl *)",
       "Bash(echo \"exit:$?\")",
       "Bash(pkill -f \"http.server 8000\")",
-      "Bash(lsof -nP -iTCP:8000 -sTCP:LISTEN)"
+      "Bash(lsof -nP -iTCP:8000 -sTCP:LISTEN)",
+      "Bash(node --input-type=module)",
+      "Bash(node *)"
     ]
   }
 }
