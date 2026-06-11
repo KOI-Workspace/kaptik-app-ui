@@ -5,7 +5,7 @@
  *  - YouTube: IFrame Player API (실제 재생 + seekTo)
  *  - Weverse 등 임베드 불가 플랫폼: 위버스 스타일 목업 영상 영역 + 가상 재생 클럭
  *
- * 두 경우 모두 자막은 컨트롤러의 현재 시간(getTime)에 동기화되어 흐르고,
+ * 두 경우 모두 전체 자막 목록에서 현재 구간을 강조하고,
  * 자막 한 줄을 탭하면 해당 타임스탬프로 이동(seekTo)한다.
  */
 import { navigate } from '../router.js';
@@ -25,9 +25,7 @@ let subtitleReadyTimer = null;
 let currentLang = 'en';
 let subtitlesReady = true;
 
-let history = [];
 let lastSubtitleStart = -1;
-const MAX_HISTORY = 50;
 
 let sheetTop = 0;
 let MIN_TOP = 100;
@@ -36,8 +34,7 @@ const MAX_TOP = () => window.innerHeight - 130;
 let isDragging = false, dragStartY = 0, dragStartTop = 0;
 const DRAG_ZONE = 70;
 
-let isUserScrolled = false, isScrolling = false, scrollEndTimer = null;
-const pendingItems = [];
+let isUserScrolled = false;
 
 let activeContextKey = null, activeContextEl = null;
 
@@ -107,6 +104,7 @@ function makeMockController() {
 function createSubtitleEl(item) {
   const wrapper = document.createElement('div');
   wrapper.className = 'subtitle-item';
+  wrapper.dataset.start = String(item.start);
 
   const speaker = item.speaker || '';
   const color = SPEAKER_COLORS[speaker] || '#888888';
@@ -148,85 +146,38 @@ function createSubtitleEl(item) {
   wrapper.querySelectorAll('.annotated-word').forEach((span) => {
     span.addEventListener('click', (e) => { e.stopPropagation(); showContext(span.dataset.key, span); });
   });
-  row.addEventListener('click', () => seekToSubtitle(item, row));
+  row.addEventListener('click', () => seekToSubtitle(item));
 
   return wrapper;
 }
 
 /* ── 자막 클릭 → seek ── */
-function seekToSubtitle(item, rowEl) {
+function seekToSubtitle(item) {
   if (controller) controller.seekTo(item.start);
-  lastSubtitleStart = item.start;
-  rowEl.classList.add('seeking');
-  setTimeout(() => rowEl.classList.remove('seeking'), 600);
-}
-
-/* ── 재생 위치까지 히스토리 재구성 ── */
-function rebuildHistoryUpTo(time) {
-  history = SUBTITLES.filter((s) => s.start <= time);
-  lastSubtitleStart = history.length ? history[history.length - 1].start : -1;
-  rerenderAll();
+  updateSubtitle(item.start);
 }
 
 function updateSubtitle(t) {
   if (!subtitlesReady) return;
   const cur = SUBTITLES.find((s) => t >= s.start && t < s.end);
+  const nextStart = cur ? cur.start : -1;
+  if (nextStart === lastSubtitleStart) return;
+  lastSubtitleStart = nextStart;
+
+  subtitleList.querySelector('.subtitle-row.current')?.classList.remove('current');
   if (!cur) return;
-  if (cur.start === lastSubtitleStart) return;
-  // 과거 시점으로 이동해도 사용자가 보고 있던 자막 목록과 스크롤 위치는 유지한다.
-  if (cur.start < lastSubtitleStart || history.some((item) => item.start === cur.start)) {
-    lastSubtitleStart = cur.start;
-    return;
-  }
-  lastSubtitleStart = cur.start;
-  history.push(cur);
-  if (isScrolling && isUserScrolled) pendingItems.push(cur);
-  else prependSubtitle(cur);
-}
-
-function prependSubtitle(item) {
-  const atTop = sheetContent.scrollTop <= 20;
-  const existingEls = [...subtitleList.querySelectorAll('.subtitle-item')];
-  const newEl = createSubtitleEl(item);
-
-  if (!atTop) {
-    const prevTop = sheetContent.scrollTop;
-    const prevHeight = sheetContent.scrollHeight;
-    subtitleList.appendChild(newEl);
-    if (subtitleList.children.length > MAX_HISTORY) subtitleList.removeChild(subtitleList.firstChild);
-    const diff = sheetContent.scrollHeight - prevHeight;
-    if (diff > 0) sheetContent.scrollTop = prevTop + diff;
-    return;
-  }
-
-  const firstTops = existingEls.map((el) => el.getBoundingClientRect().top);
-  newEl.style.opacity = '0';
-  subtitleList.appendChild(newEl);
-  if (subtitleList.children.length > MAX_HISTORY) subtitleList.removeChild(subtitleList.firstChild);
-
-  if (existingEls.length > 0) {
-    const lastTops = existingEls.map((el) => (el.parentElement ? el.getBoundingClientRect().top : null));
-    existingEls.forEach((el, i) => {
-      if (!el.parentElement || lastTops[i] === null) return;
-      const delta = firstTops[i] - lastTops[i];
-      if (Math.abs(delta) < 0.5) return;
-      el.style.transition = 'none';
-      el.style.transform = `translateY(${delta}px)`;
-    });
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      existingEls.forEach((el) => { if (!el.parentElement) return; el.style.transition = 'transform 0.32s ease-out'; el.style.transform = ''; });
-      newEl.style.transition = 'opacity 0.2s ease-out 0.1s';
-      newEl.style.opacity = '1';
-    }));
-    setTimeout(() => existingEls.forEach((el) => { if (!el.parentElement) return; el.style.transition = ''; el.style.transform = ''; }), 360);
-  } else {
-    newEl.style.opacity = '1';
-  }
+  subtitleList
+    .querySelector(`.subtitle-item[data-start="${cur.start}"] .subtitle-row`)
+    ?.classList.add('current');
 }
 
 function rerenderAll() {
+  const scrollTop = sheetContent.scrollTop;
   subtitleList.innerHTML = '';
-  history.forEach((item) => subtitleList.appendChild(createSubtitleEl(item)));
+  SUBTITLES.forEach((item) => subtitleList.appendChild(createSubtitleEl(item)));
+  lastSubtitleStart = -1;
+  if (controller) updateSubtitle(controller.getTime());
+  sheetContent.scrollTop = scrollTop;
 }
 
 /** 자막 준비 완료 시 현재 재생 구간부터 자막을 시작한다. */
@@ -238,12 +189,8 @@ function finishSubtitlePreparation(statusEl) {
   statusEl.querySelector('.subtitle-status-desc').textContent = t('player.subtitleReadyDesc');
 
   const currentTime = controller.getTime();
-  const currentSubtitle = SUBTITLES.find((item) => currentTime >= item.start && currentTime < item.end);
-  if (currentSubtitle) {
-    lastSubtitleStart = currentSubtitle.start;
-    history = [currentSubtitle];
-    prependSubtitle(currentSubtitle);
-  }
+  rerenderAll();
+  updateSubtitle(currentTime);
 
   setTimeout(() => statusEl.classList.add('leaving'), 600);
   setTimeout(() => statusEl.remove(), 950);
@@ -328,8 +275,8 @@ export function renderPlayer(params, root) {
   const isYouTube = source.platform === 'youtube' && source.youtubeId;
 
   // 상태 리셋
-  history = []; lastSubtitleStart = -1; pendingItems.length = 0;
-  isUserScrolled = false; isScrolling = false;
+  lastSubtitleStart = -1;
+  isUserScrolled = false;
   currentLang = getState().defaultLang || 'en';
   subtitlesReady = !(params && params.subtitlePending);
 
@@ -390,7 +337,9 @@ export function renderPlayer(params, root) {
   subtitleList.className = 'subtitle-list';
   sheetContent.appendChild(subtitleList);
 
-  if (!subtitlesReady) {
+  if (subtitlesReady) {
+    rerenderAll();
+  } else {
     const statusEl = root.querySelector('#subtitleStatus');
     const delay = Math.max(0, Number(params.subtitleDelayMs) || 4000);
     subtitleReadyTimer = setTimeout(() => finishSubtitlePreparation(statusEl), delay);
@@ -474,31 +423,12 @@ function bindScroll() {
   sheetContent.addEventListener('scroll', () => {
     isUserScrolled = sheetContent.scrollTop > 20;
     scrollToTopBtn.classList.toggle('visible', isUserScrolled);
-    if (isUserScrolled) {
-      isScrolling = true;
-      clearTimeout(scrollEndTimer);
-      scrollEndTimer = setTimeout(flushPending, 200);
-    }
   });
   scrollToTopBtn.addEventListener('click', () => {
-    clearTimeout(scrollEndTimer);
-    isScrolling = false;
-    pendingItems.length = 0;
     sheetContent.scrollTo({ top: 0, behavior: 'smooth' });
     isUserScrolled = false;
     scrollToTopBtn.classList.remove('visible');
   });
-}
-
-function flushPending() {
-  isScrolling = false;
-  if (pendingItems.length === 0) return;
-  const prevTop = sheetContent.scrollTop;
-  const prevHeight = sheetContent.scrollHeight;
-  pendingItems.splice(0).forEach((item) => subtitleList.appendChild(createSubtitleEl(item)));
-  while (subtitleList.children.length > MAX_HISTORY) subtitleList.removeChild(subtitleList.firstChild);
-  const diff = sheetContent.scrollHeight - prevHeight;
-  if (diff > 0) sheetContent.scrollTop = prevTop + diff;
 }
 
 function bindLang(root) {
