@@ -252,7 +252,8 @@
 .settings-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 32px; }
 .settings-row-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
 .settings-label { font-size: 13px; font-weight: 500; color: var(--text-1); flex-shrink: 0; }
-.settings-col { display: flex; flex-direction: column; }
+.settings-col { display: flex; flex-direction: column; padding-bottom: 8px; }
+.settings-col:last-child { padding-bottom: 0; }
 .settings-val { font-size: 12px; font-weight: 600; color: var(--brand); }
 
 /* iOS 스타일 토글 */
