@@ -212,4 +212,26 @@ export const STRINGS = {
   'onb.upsell.title':      { ko: '더 많은 영상을 자막과 함께', en: 'More videos, with subtitles' },
   'onb.upsell.sub':        { ko: '업그레이드하고 모든 라이브와 영상을 내 언어로 즐겨보세요.', en: 'Upgrade to enjoy every live and video in your language.' },
   'toast.welcome':         { ko: 'Kaptik에 오신 걸 환영해요!', en: 'Welcome to Kaptik!' },
+
+  /* ── 약관 / 동의 ── */
+  'agree.all':       { ko: '약관에 전체 동의', en: 'Agree to all' },
+  'agree.tos':       { ko: '서비스 이용약관 동의', en: 'Agree to the Terms of Service' },
+  'agree.privacy':   { ko: '개인정보 수집·이용 동의', en: 'Agree to the collection and use of personal data' },
+  'agree.marketing': { ko: '마케팅 정보 수신 동의', en: 'Agree to receive marketing messages' },
+  'agree.required':  { ko: '(필수)', en: '(required)' },
+  'agree.optional':  { ko: '(선택)', en: '(optional)' },
+  'agree.view':      { ko: '보기', en: 'View' },
+  'err.agreeRequired': { ko: '필수 약관에 동의해 주세요', en: 'Please agree to the required terms' },
+
+  'my.group.legal':   { ko: '약관 / 동의', en: 'Terms & consent' },
+  'my.row.tos':       { ko: '서비스 이용약관', en: 'Terms of Service' },
+  'my.row.privacy':   { ko: '개인정보 처리방침', en: 'Privacy Policy' },
+  'my.row.marketing': { ko: '마케팅 정보 수신', en: 'Marketing messages' },
+  'toast.marketingOn':  { ko: '마케팅 수신에 동의했어요', en: 'Marketing messages on' },
+  'toast.marketingOff': { ko: '마케팅 수신을 해제했어요', en: 'Marketing messages off' },
+
+  'legal.tos.title':     { ko: '서비스 이용약관', en: 'Terms of Service' },
+  'legal.tos.body':      { ko: '본 약관은 Kaptik 서비스 이용에 관한 조건을 규정합니다. (프로토타입 — 실제 약관 전문은 정식 출시 시 제공됩니다.)\n\n제1조(목적) 본 약관은 회사가 제공하는 실시간 번역 자막 서비스의 이용 조건 및 절차를 정합니다.\n제2조(이용계약) 이용자는 약관에 동의함으로써 서비스를 이용할 수 있습니다.\n…', en: 'These terms govern your use of Kaptik. (Prototype — the full terms will be provided at launch.)\n\n1. Purpose — These terms set out the conditions for using the real-time subtitle service.\n2. Agreement — By agreeing, you may use the service.\n…' },
+  'legal.privacy.title': { ko: '개인정보 처리방침', en: 'Privacy Policy' },
+  'legal.privacy.body':  { ko: 'Kaptik은 최소한의 개인정보만 수집·이용합니다. (프로토타입 — 실제 방침 전문은 정식 출시 시 제공됩니다.)\n\n1. 수집 항목: 이메일, 로그인 수단\n2. 이용 목적: 계정 식별, 서비스 제공, 결제 처리\n3. 보유 기간: 회원 탈퇴 시까지\n…', en: 'Kaptik collects only the minimum personal data. (Prototype — the full policy will be provided at launch.)\n\n1. Collected: email, sign-in method\n2. Purpose: account identification, service delivery, payment\n3. Retention: until account deletion\n…' },
 };

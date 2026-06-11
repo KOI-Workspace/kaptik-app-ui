@@ -3,8 +3,8 @@
  */
 import { headerHTML, bindHeader } from '../ui.js';
 import { navigate } from '../router.js';
-import { getState, setState, setPlan, logout, login } from '../state.js';
-import { openPaymentModal, openFollowedArtists, openBillingModal, toast, PLANS } from '../modals.js';
+import { getState, setState, setPlan, setAgreement, logout, login } from '../state.js';
+import { openPaymentModal, openFollowedArtists, openBillingModal, openLegalDoc, toast, PLANS } from '../modals.js';
 import { t, setLang } from '../i18n.js';
 import { LANGUAGES } from '../data.js';
 
@@ -90,6 +90,22 @@ export function renderMy(_params, root) {
           </div>
         </div>
 
+        <p class="settings-group-label">${t('my.group.legal')}</p>
+        <div class="settings-group">
+          <div class="settings-row clickable" id="tosRow">
+            <span class="row-label">${t('my.row.tos')}</span>
+            <span class="row-value">〉</span>
+          </div>
+          <div class="settings-row clickable" id="privacyRow">
+            <span class="row-label">${t('my.row.privacy')}</span>
+            <span class="row-value">〉</span>
+          </div>
+          <div class="settings-row">
+            <span class="row-label">${t('my.row.marketing')}</span>
+            <button class="toggle ${s.agreements.marketing ? 'on' : ''}" id="tglMarketing" aria-label="${t('my.row.marketing')}"></button>
+          </div>
+        </div>
+
         <p class="settings-group-label">${t('my.group.dev')}</p>
         <div class="settings-group">
           <div class="settings-row">
@@ -131,6 +147,16 @@ export function renderMy(_params, root) {
   // 팔로우한 아티스트 목록
   root.querySelector('#followsRow').addEventListener('click', () => {
     openFollowedArtists({ onChange: reRender });
+  });
+
+  // 약관 / 동의
+  root.querySelector('#tosRow').addEventListener('click', () => openLegalDoc('tos'));
+  root.querySelector('#privacyRow').addEventListener('click', () => openLegalDoc('privacy'));
+  root.querySelector('#tglMarketing').addEventListener('click', () => {
+    const next = !s.agreements.marketing;
+    setAgreement('marketing', next);
+    toast({ title: t(next ? 'toast.marketingOn' : 'toast.marketingOff'), type: 'check' });
+    reRender();
   });
 
   root.querySelector('#planRow').addEventListener('click', () => {

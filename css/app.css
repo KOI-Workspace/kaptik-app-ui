@@ -787,3 +787,44 @@
   font-size: 10px; font-weight: 800; color: #fff; background: var(--brand);
   padding: 2px 7px; border-radius: var(--r-pill); vertical-align: middle; margin-left: 4px;
 }
+
+/* ─────────────────────────────────────────
+   약관 / 동의 (온보딩 회원가입)
+   ───────────────────────────────────────── */
+.agree-box {
+  margin: 4px 0 6px; padding: 12px 14px;
+  background: var(--surface-el); border: 1px solid var(--border-sub); border-radius: var(--r-md);
+}
+.agree-box.shake { animation: shake 0.4s; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+.agree-row {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  background: none; border: none; cursor: pointer; font-family: var(--font);
+  padding: 7px 0; text-align: left; color: var(--text-2);
+}
+.agree-row.all { font-weight: 800; color: var(--text-1); font-size: 15px; }
+.agree-sub { border-top: 1px solid var(--border-sub); margin-top: 6px; padding-top: 4px; }
+.agree-check {
+  flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+  border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center;
+  transition: background var(--t-base), border-color var(--t-base);
+}
+.agree-row.on .agree-check { background: var(--brand); border-color: var(--brand); }
+.agree-row.on .agree-check::after {
+  content: ''; width: 11px; height: 6px; margin-top: -2px;
+  border-left: 2px solid #fff; border-bottom: 2px solid #fff; transform: rotate(-45deg);
+}
+.agree-text { flex: 1; font-size: 13.5px; font-weight: 600; line-height: 1.4; }
+.agree-text .req { color: var(--brand); font-weight: 800; }
+.agree-text .opt { color: var(--text-3); font-weight: 700; }
+.agree-view {
+  flex-shrink: 0; font-size: 12px; font-weight: 600; color: var(--text-3);
+  text-decoration: underline; padding: 2px 4px;
+}
+
+/* 약관 문서 본문 */
+.legal-body {
+  margin-top: 8px; overflow-y: auto; max-height: 64vh;
+  font-size: 13.5px; line-height: 1.7; color: var(--text-2); font-weight: 500;
+  white-space: pre-line;
+}

@@ -376,6 +376,26 @@ export function openBillingModal({ onChange } = {}) {
 }
 
 /* ─────────────────────────────────────────
+   약관 / 개인정보 문서 모달
+   key: 'tos' | 'privacy' → legal.<key>.title / legal.<key>.body
+   ───────────────────────────────────────── */
+export function openLegalDoc(key) {
+  const scrim = document.createElement('div');
+  scrim.className = 'scrim';
+  scrim.innerHTML = `
+    <div class="modal-card sheet-modal" style="position:relative;">
+      <button class="modal-close-x" aria-label="${t('aria.close')}">✕</button>
+      <div class="modal-grip"></div>
+      <div class="modal-title">${t(`legal.${key}.title`)}</div>
+      <div class="legal-body">${t(`legal.${key}.body`)}</div>
+    </div>
+  `;
+  scrim.querySelector('.modal-close-x').addEventListener('click', () => closeScrim(scrim));
+  scrim.addEventListener('click', (e) => { if (e.target === scrim) closeScrim(scrim); });
+  modalRoot().appendChild(scrim);
+}
+
+/* ─────────────────────────────────────────
    Processing 오버레이
    platform에 따라 스크립트 추출/STT 분기를 시뮬레이션
    ───────────────────────────────────────── */

@@ -15,7 +15,7 @@ import { navigate } from '../router.js';
 import { getState, setState, setPlan, followArtist, unfollowArtist, isFollowing } from '../state.js';
 import { signIn, signUp, signInWithGoogle } from '../auth.js';
 import { t } from '../i18n.js';
-import { toast, PLANS } from '../modals.js';
+import { toast, PLANS, openLegalDoc } from '../modals.js';
 import { ARTIST_CATALOG, LANGUAGES } from '../data.js';
 
 const GOOGLE_SVG = `<svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.02-3.7H.96v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.98 10.72a5.4 5.4 0 0 1 0-3.44V4.95H.96a9 9 0 0 0 0 8.1l3.02-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.9 11.43 0 9 0A9 9 0 0 0 .96 4.95l3.02 2.33C4.68 5.16 6.66 3.58 9 3.58z"/></svg>`;
@@ -28,6 +28,8 @@ export function renderOnboarding(_params, root) {
   let upsell = false;        // plan 단계가 기존 유저 업셀인지
   let chosenPlan = 'pro';    // plan 단계 선택값
   let countdownTimer = null; // plan 단계 X 버튼 카운트다운
+  // 회원가입 동의 — tos·privacy 필수, marketing 선택 (스텝 재렌더에도 유지)
+  const agree = { tos: false, privacy: false, marketing: false };
 
   const clearCountdown = () => { if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; } };
 
@@ -79,10 +81,32 @@ export function renderOnboarding(_params, root) {
           <div class="field" data-field="confirm">
             <input type="password" id="pw2" placeholder="${t('login.ph.pwConfirm')}" autocomplete="new-password" />
             <p class="field-error"></p>
+          </div>
+
+          <div class="agree-box" id="agreeBox">
+            <button type="button" class="agree-row all ${agree.tos && agree.privacy && agree.marketing ? 'on' : ''}" data-agree="all">
+              <span class="agree-check"></span><span class="agree-text">${t('agree.all')}</span>
+            </button>
+            <div class="agree-sub">
+              <button type="button" class="agree-row ${agree.tos ? 'on' : ''}" data-agree="tos">
+                <span class="agree-check"></span>
+                <span class="agree-text"><b class="req">${t('agree.required')}</b> ${t('agree.tos')}</span>
+                <span class="agree-view" data-doc="tos">${t('agree.view')}</span>
+              </button>
+              <button type="button" class="agree-row ${agree.privacy ? 'on' : ''}" data-agree="privacy">
+                <span class="agree-check"></span>
+                <span class="agree-text"><b class="req">${t('agree.required')}</b> ${t('agree.privacy')}</span>
+                <span class="agree-view" data-doc="privacy">${t('agree.view')}</span>
+              </button>
+              <button type="button" class="agree-row ${agree.marketing ? 'on' : ''}" data-agree="marketing">
+                <span class="agree-check"></span>
+                <span class="agree-text"><b class="opt">${t('agree.optional')}</b> ${t('agree.marketing')}</span>
+              </button>
+            </div>
           </div>` : ''}
 
           <button class="btn-primary" id="submitBtn" style="margin-top:6px;">${isSignup ? t('login.signup') : t('login.signin')}</button>
-          <p class="onb-terms">${t('login.terms')}</p>
+          ${isSignup ? '' : `<p class="onb-terms">${t('login.terms')}</p>`}
         </div>
       </div>
     `;
@@ -93,6 +117,26 @@ export function renderOnboarding(_params, root) {
     root.querySelectorAll('.field input').forEach((inp) => {
       inp.addEventListener('input', () => inp.closest('.field')?.classList.remove('invalid'));
     });
+
+    // 동의 체크박스 (회원가입 모드)
+    if (isSignup) {
+      root.querySelectorAll('[data-agree]').forEach((row) => {
+        row.addEventListener('click', () => {
+          const key = row.dataset.agree;
+          if (key === 'all') {
+            const next = !(agree.tos && agree.privacy && agree.marketing);
+            agree.tos = agree.privacy = agree.marketing = next;
+          } else {
+            agree[key] = !agree[key];
+          }
+          renderAuth(); // 체크 상태 + 전체동의 + 버튼 활성화 갱신
+        });
+      });
+      // '보기' 링크 → 약관 문서 (행 토글 막기)
+      root.querySelectorAll('.agree-view').forEach((v) => {
+        v.addEventListener('click', (e) => { e.stopPropagation(); openLegalDoc(v.dataset.doc); });
+      });
+    }
 
     const showError = (field, key) => {
       const wrap = root.querySelector(`.field[data-field="${field}"]`);
@@ -108,12 +152,21 @@ export function renderOnboarding(_params, root) {
     });
     root.querySelector('#submitBtn').addEventListener('click', () => {
       root.querySelectorAll('.field.invalid').forEach((f) => f.classList.remove('invalid'));
+      // 회원가입은 필수 약관(이용약관·개인정보) 동의가 선행돼야 한다
+      if (isSignup && !(agree.tos && agree.privacy)) {
+        toast({ title: t('err.agreeRequired'), type: 'warn' });
+        root.querySelector('#agreeBox')?.classList.add('shake');
+        setTimeout(() => root.querySelector('#agreeBox')?.classList.remove('shake'), 400);
+        return;
+      }
       const email = root.querySelector('#email').value;
       const password = root.querySelector('#pw').value;
       const confirm = isSignup ? root.querySelector('#pw2').value : '';
       const r = isSignup ? signUp({ email, password, confirm }) : signIn({ email, password });
-      if (r.ok) afterAuth(r.isNew);
-      else showError(r.field, r.key);
+      if (!r.ok) { showError(r.field, r.key); return; }
+      // 가입 성공 시 동의 내역 저장 (필수는 동의 완료, 마케팅은 선택값)
+      if (isSignup) setState({ agreements: { tos: true, privacy: true, marketing: agree.marketing } });
+      afterAuth(r.isNew);
     });
   }
 
