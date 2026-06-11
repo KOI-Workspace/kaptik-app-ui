@@ -587,16 +587,40 @@
   width: 100%; text-align: left; cursor: pointer;
   border: 1.5px solid var(--border); background: var(--surface-el);
   border-radius: var(--r-md); padding: 16px 18px;
-  transition: border-color var(--t-base), background var(--t-base);
+  color: var(--text-1); font-family: var(--font);
+  transition: border-color var(--t-base), background var(--t-base), transform var(--t-base), box-shadow var(--t-base);
 }
 .plan-option.selected {
   border-color: rgba(131, 83, 235, 0.7);
   background: radial-gradient(circle at 50% 0%, rgba(131, 83, 235, 0.18) 0%, var(--surface-el) 70%);
 }
+.payment-plan-option {
+  border-color: rgba(131, 83, 235, 0.5);
+  background: radial-gradient(circle at 85% 0%, rgba(131, 83, 235, 0.2) 0%, var(--surface-el) 62%);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.14);
+}
+.payment-plan-option:hover,
+.payment-plan-option:focus-visible {
+  border-color: var(--brand);
+  background: radial-gradient(circle at 85% 0%, rgba(131, 83, 235, 0.3) 0%, var(--surface-el) 66%);
+  box-shadow: 0 12px 32px rgba(131, 83, 235, 0.18);
+  transform: translateY(-2px);
+  outline: none;
+}
+.payment-plan-option:active {
+  transform: scale(0.985);
+  box-shadow: 0 6px 18px rgba(131, 83, 235, 0.14);
+}
 .plan-option-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
 .plan-option-name { font-size: 17px; font-weight: 800; letter-spacing: -0.01em; }
-.plan-option-price { font-size: 22px; font-weight: 900; letter-spacing: -0.03em; }
+.plan-option-price { display: inline-flex; align-items: center; gap: 3px; font-size: 22px; font-weight: 900; letter-spacing: -0.03em; }
 .plan-option-price small { font-size: 13px; font-weight: 600; color: var(--text-3); }
+.plan-option-arrow {
+  margin-left: 5px; color: var(--brand);
+  transition: transform var(--t-base);
+}
+.payment-plan-option:hover .plan-option-arrow,
+.payment-plan-option:focus-visible .plan-option-arrow { transform: translateX(3px); }
 .plan-option-tagline { font-size: 13px; color: var(--text-3); font-weight: 500; margin: 4px 0 12px; }
 .plan-option .plan-feats { margin-top: 0; }
 

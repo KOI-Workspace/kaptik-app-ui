@@ -114,22 +114,33 @@ export const PLANS = {
 };
 
 /**
- * 결제(Upgrade) 모달 — Basic / Pro 두 요금제 중 선택
- * @param {{ onSuccess?: Function, select?: 'basic'|'pro' }} opts select: 기본 선택 요금제
+ * 결제(Upgrade) 모달 — 현재 플랜에서 변경 가능한 요금제를 표시
+ * @param {{ onSuccess?: Function, select?: 'basic'|'pro' }} opts select: 우선 표시할 요금제
  */
 export function openPaymentModal({ onSuccess, select = 'pro' } = {}) {
   const scrim = document.createElement('div');
   scrim.className = 'scrim';
   const check = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
-  let chosen = select;
+  const currentPlan = getState().plan;
+  const plansToShow = currentPlan === 'basic'
+    ? ['pro']
+    : currentPlan === 'pro'
+      ? ['basic']
+      : ['basic', 'pro'];
+  const orderedPlans = plansToShow.includes(select)
+    ? [select, ...plansToShow.filter((key) => key !== select)]
+    : plansToShow;
 
   const planCard = (key) => {
     const p = PLANS[key];
     return `
-      <button class="plan-option ${key === chosen ? 'selected' : ''}" data-plan="${key}">
+      <button class="plan-option payment-plan-option" data-plan="${key}">
         <div class="plan-option-head">
           <span class="plan-option-name">${p.name}</span>
-          <span class="plan-option-price">${p.price}<small> / 월</small></span>
+          <span class="plan-option-price">
+            ${p.price}<small> / 월</small>
+            <svg class="plan-option-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+          </span>
         </div>
         <div class="plan-option-tagline">${t(p.tagline)}</div>
         <ul class="plan-feats">
@@ -146,34 +157,22 @@ export function openPaymentModal({ onSuccess, select = 'pro' } = {}) {
       <div class="modal-desc">${t('payment.desc')}</div>
 
       <div class="plan-options">
-        ${planCard('basic')}
-        ${planCard('pro')}
-      </div>
-
-      <div class="modal-actions">
-        <button class="btn-primary" data-act="pay">${t('payment.start', { name: PLANS[chosen].name })}</button>
-        <button class="btn-secondary" data-act="later">${t('payment.later')}</button>
+        ${orderedPlans.map(planCard).join('')}
       </div>
     </div>
   `;
 
-  // 요금제 카드 선택
-  const payBtn = scrim.querySelector('[data-act="pay"]');
+  // 가격 카드를 누르면 해당 요금제로 바로 결제한다.
   scrim.querySelectorAll('.plan-option').forEach((el) => {
     el.addEventListener('click', () => {
-      chosen = el.dataset.plan;
-      scrim.querySelectorAll('.plan-option').forEach((o) => o.classList.toggle('selected', o === el));
-      payBtn.textContent = t('payment.start', { name: PLANS[chosen].name });
+      const chosen = el.dataset.plan;
+      setPlan(chosen);
+      toast({ title: t('toast.planActive.title', { name: PLANS[chosen].name }), sub: t('toast.planActive.sub'), type: 'check' });
+      closeScrim(scrim);
+      if (onSuccess) onSuccess();
     });
   });
 
-  payBtn.addEventListener('click', () => {
-    setPlan(chosen);
-    toast({ title: t('toast.planActive.title', { name: PLANS[chosen].name }), sub: t('toast.planActive.sub'), type: 'check' });
-    closeScrim(scrim);
-    if (onSuccess) onSuccess();
-  });
-  scrim.querySelector('[data-act="later"]').addEventListener('click', () => closeScrim(scrim));
   scrim.querySelector('.modal-close-x').addEventListener('click', () => closeScrim(scrim));
   scrim.addEventListener('click', (e) => { if (e.target === scrim) closeScrim(scrim); });
 
