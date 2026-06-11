@@ -390,8 +390,52 @@
   display: inline-flex; align-items: center; gap: 5px;
   font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: var(--r-pill);
 }
-.plan-badge.free { background: var(--surface-el); color: var(--text-2); border: 1px solid var(--border); }
-.plan-badge.pro  { background: rgba(131, 83, 235, 0.2); color: #C4AAFF; border: 1px solid rgba(131, 83, 235, 0.5); }
+.plan-badge.free  { background: var(--surface-el); color: var(--text-2); border: 1px solid var(--border); }
+.plan-badge.basic { background: rgba(131, 83, 235, 0.12); color: #B79BFF; border: 1px solid rgba(131, 83, 235, 0.35); }
+.plan-badge.pro   { background: rgba(131, 83, 235, 0.2); color: #C4AAFF; border: 1px solid rgba(131, 83, 235, 0.5); }
+
+/* My 화면 상단 업그레이드 CTA 배너 */
+.upgrade-banner {
+  display: flex; align-items: center; gap: 16px;
+  width: 100%; text-align: left; cursor: pointer;
+  border: none; border-radius: var(--r-lg);
+  padding: 18px 18px;
+  margin-bottom: 22px;
+  background: linear-gradient(115deg, #8353EB 0%, #6338C4 52%, #5B7CFA 100%);
+  box-shadow: 0 10px 28px var(--brand-glow);
+  transition: transform var(--t-base) var(--ease);
+}
+.upgrade-banner:active { transform: scale(0.985); }
+.upgrade-banner .ub-cta {
+  display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0;
+  font-size: 17px; font-weight: 800; color: #fff; letter-spacing: -0.01em;
+  padding: 11px 18px;
+  border: 1.5px solid rgba(255, 255, 255, 0.55);
+  border-radius: var(--r-md);
+}
+.upgrade-banner .ub-desc {
+  font-size: 13px; font-weight: 600; line-height: 1.45;
+  color: rgba(255, 255, 255, 0.94);
+}
+
+/* 개발용 요금제 세그먼트 컨트롤 */
+.seg {
+  display: inline-flex; gap: 3px; padding: 3px;
+  background: #2B2B2B; border-radius: var(--r-sm); flex-shrink: 0;
+}
+.seg.disabled { opacity: 0.4; }
+.seg-btn {
+  border: none; background: transparent; color: var(--text-3);
+  font-size: 13px; font-weight: 700; font-family: var(--font);
+  padding: 6px 12px; border-radius: 8px; cursor: pointer;
+  transition: background var(--t-base), color var(--t-base);
+}
+.seg-btn.on { background: var(--brand); color: #fff; }
+.seg-btn:disabled { cursor: not-allowed; }
+
+/* 로그인/회원가입 전환 탭 — 가로 전체 폭 */
+.auth-seg { display: flex; width: 100%; margin-bottom: 22px; }
+.auth-seg .seg-btn { flex: 1; padding: 10px 0; font-size: 14px; }
 
 .row-select {
   background: var(--surface-el); color: var(--text-1);
@@ -416,6 +460,60 @@
 }
 .toggle.on { background: var(--brand); }
 .toggle.on::after { transform: translateX(18px); }
+/* 작은 토글 (검색 결과 행용) */
+.toggle.sm { width: 38px; height: 22px; }
+.toggle.sm::after { width: 17px; height: 17px; top: 2.5px; left: 2.5px; }
+.toggle.sm.on::after { transform: translateX(16px); }
+
+/* 이니셜 아바타 (로고 없는 아티스트) */
+.artist-avatar-inner.initials { font-size: 15px; color: var(--text-1); background: var(--surface-el); }
+
+/* ── 아티스트 검색 / 팔로우 모달 ── */
+.sheet-modal { max-height: 82vh; display: flex; flex-direction: column; }
+.artist-results { overflow-y: auto; margin-top: 6px; flex: 1; min-height: 120px; }
+.asr-hint { text-align: center; color: var(--text-3); font-size: 14px; font-weight: 500; padding: 28px 12px; line-height: 1.5; }
+.artist-result {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 2px; border-bottom: 1px solid var(--border-sub);
+}
+.artist-result:last-child { border-bottom: none; }
+.asr-avatar {
+  border-radius: 50%; overflow: hidden; flex-shrink: 0;
+  background: #fff; display: flex; align-items: center; justify-content: center;
+}
+.asr-avatar img { width: 70%; height: 70%; object-fit: contain; }
+.asr-avatar.initials { background: var(--surface-el); color: var(--text-1); font-size: 15px; font-weight: 800; }
+.asr-info { flex: 1; min-width: 0; }
+.asr-name { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 7px; }
+.asr-live {
+  font-size: 9px; font-weight: 800; color: #fff; background: var(--notif);
+  padding: 1px 5px; border-radius: var(--r-pill); letter-spacing: 0.04em;
+}
+.asr-notify { display: inline-flex; align-items: center; gap: 8px; margin-top: 5px; cursor: pointer; }
+.asr-notify span { font-size: 12px; color: var(--text-3); font-weight: 600; }
+.asr-status { font-size: 12px; font-weight: 600; margin-top: 4px; }
+.asr-status.on { color: var(--brand); }
+.asr-status.off { color: var(--text-3); }
+.asr-follow {
+  flex-shrink: 0; border: none; cursor: pointer;
+  font-size: 13px; font-weight: 700; font-family: var(--font);
+  padding: 8px 16px; border-radius: var(--r-pill);
+  background: var(--brand); color: #fff;
+  transition: background var(--t-base);
+}
+.asr-follow:active { background: var(--brand-active); }
+.asr-follow.following { background: var(--surface-el); color: var(--text-2); border: 1px solid var(--border); }
+.asr-unfollow {
+  flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%;
+  border: none; cursor: pointer; background: var(--surface-el); color: var(--text-3);
+  font-size: 13px; margin-left: 2px;
+}
+.asr-empty { text-align: center; padding: 32px 12px; }
+.asr-empty p { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+.asr-empty span { font-size: 13px; color: var(--text-3); font-weight: 500; }
+
+/* 위험 동작(구독 해지) 보조 버튼 */
+.btn-secondary.danger { color: var(--notif); }
 
 .dev-note {
   font-size: 12px; color: var(--text-3); font-weight: 500;
@@ -483,6 +581,25 @@
 .plan-feats li { display: flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 500; color: var(--text-2); }
 .plan-feats li svg { color: var(--brand); flex-shrink: 0; }
 
+/* 결제 모달 — Basic/Pro 선택형 요금제 카드 */
+.plan-options { display: flex; flex-direction: column; gap: 12px; margin-bottom: 18px; }
+.plan-option {
+  width: 100%; text-align: left; cursor: pointer;
+  border: 1.5px solid var(--border); background: var(--surface-el);
+  border-radius: var(--r-md); padding: 16px 18px;
+  transition: border-color var(--t-base), background var(--t-base);
+}
+.plan-option.selected {
+  border-color: rgba(131, 83, 235, 0.7);
+  background: radial-gradient(circle at 50% 0%, rgba(131, 83, 235, 0.18) 0%, var(--surface-el) 70%);
+}
+.plan-option-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.plan-option-name { font-size: 17px; font-weight: 800; letter-spacing: -0.01em; }
+.plan-option-price { font-size: 22px; font-weight: 900; letter-spacing: -0.03em; }
+.plan-option-price small { font-size: 13px; font-weight: 600; color: var(--text-3); }
+.plan-option-tagline { font-size: 13px; color: var(--text-3); font-weight: 500; margin: 4px 0 12px; }
+.plan-option .plan-feats { margin-top: 0; }
+
 /* 로그인 폼 */
 .login-divider {
   display: flex; align-items: center; gap: 12px;
@@ -501,6 +618,10 @@
 }
 .field input::placeholder { color: var(--text-3); }
 .field input:focus { border-color: var(--brand); }
+/* 인라인 검증 오류 */
+.field-error { display: none; font-size: 12.5px; font-weight: 600; color: var(--notif); margin: 6px 2px 0; }
+.field.invalid input { border-color: var(--notif); }
+.field.invalid .field-error { display: block; }
 .btn-google {
   display: flex; align-items: center; justify-content: center; gap: 10px;
   width: 100%; padding: 14px;

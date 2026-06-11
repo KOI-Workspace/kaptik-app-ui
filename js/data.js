@@ -17,10 +17,32 @@ export const DEMO_VIDEO = {
   platform: 'Weverse',
 };
 
-/* ── 팔로우 아티스트 ── */
-export const FOLLOWED_ARTISTS = [
-  { id: 'bts', name: 'BTS', img: 'public/images/bts logo white.png', live: true },
-  { id: 'txt', name: 'TXT', img: 'public/images/txt logo white.jpg', live: false },
+/* ── 아티스트 카탈로그 ──
+ * 검색/팔로우 대상이 되는 전체 아티스트 목록.
+ * 로고 이미지가 없는 아티스트는 이니셜 아바타로 표시한다(img 생략).
+ * 실제 팔로우 여부/알림 설정은 state.js의 follows가 보관한다. */
+export const ARTIST_CATALOG = [
+  { id: 'bts',        name: 'BTS',         img: 'public/images/bts logo white.png', live: true },
+  { id: 'txt',        name: 'TXT',         img: 'public/images/txt logo white.jpg', live: false },
+  { id: 'seventeen',  name: 'SEVENTEEN',   live: false },
+  { id: 'straykids',  name: 'Stray Kids',  live: true },
+  { id: 'enhypen',    name: 'ENHYPEN',     live: false },
+  { id: 'lesserafim', name: 'LE SSERAFIM', live: false },
+  { id: 'newjeans',   name: 'NewJeans',    live: false },
+  { id: 'aespa',      name: 'aespa',       live: false },
+  { id: 'ive',        name: 'IVE',         live: false },
+  { id: 'gidle',      name: '(G)I-DLE',    live: false },
+];
+
+/** id로 아티스트 정보를 찾는다 (없으면 undefined) */
+export function getArtist(id) {
+  return ARTIST_CATALOG.find((a) => a.id === id);
+}
+
+/* 기본 팔로우 시드 — 신규 사용자의 초기 팔로우 목록 (state DEFAULTS에서 사용) */
+export const DEFAULT_FOLLOWS = [
+  { id: 'bts', notify: true },
+  { id: 'txt', notify: true },
 ];
 
 /* ── 라이브 / 영상 소식 ── */

@@ -7,6 +7,7 @@ import { headerHTML, bindHeader } from '../ui.js';
 import { navigate } from '../router.js';
 import { requireAccess } from '../gate.js';
 import { showProcessing, toast } from '../modals.js';
+import { t } from '../i18n.js';
 
 /* 플랫폼 정의 (Weverse 로고 복제 금지 → 심볼/컬러로 표현) */
 const PLATFORMS = [
@@ -29,10 +30,10 @@ function detectPlatform(url) {
 function startTranslation(platform) {
   requireAccess(() => {
     showProcessing(platform, () => {
-      toast({ title: '번역이 완료됐어요', sub: '실시간 자막을 확인해 보세요', type: 'check' });
+      toast({ title: t('toast.translateDone.title'), sub: t('toast.translateDone.sub'), type: 'check' });
       navigate('player', { feed: null });
     });
-  });
+  }, { need: 'pro' });
 }
 
 export function renderTranslate(_params, root) {
@@ -40,12 +41,12 @@ export function renderTranslate(_params, root) {
     <div class="view">
       ${headerHTML({ showSearch: false, hasNotif: true })}
       <div class="page-content">
-        <h1 class="translate-hero">URL을 입력하면<br><span class="accent">실시간 번역 자막</span>이 시작돼요</h1>
+        <h1 class="translate-hero">${t('translate.heroHtml')}</h1>
 
         <div class="url-input-wrap">
           <input class="url-input" id="urlInput" type="url" inputmode="url"
-                 placeholder="영상 링크를 붙여넣으세요" autocomplete="off" />
-          <button class="url-submit" id="urlSubmit" aria-label="번역 시작">
+                 placeholder="${t('translate.placeholder')}" autocomplete="off" />
+          <button class="url-submit" id="urlSubmit" aria-label="${t('aria.translateStart')}">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </button>
         </div>

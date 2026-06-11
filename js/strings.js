@@ -1,0 +1,197 @@
+/**
+ * UI 번역 사전 — 키마다 10개 언어 문자열을 담는다.
+ * 언어 코드: ko, en, ja, zh-CN, es, id, pt, fr, de, vi (data.js LANGUAGES와 동일)
+ *
+ * 규칙:
+ * - 영상 제목/아티스트명 등 "콘텐츠"는 여기 없음(데이터 그대로 사용).
+ * - 브랜드/제품 고유어(Kaptik, Upgrade, Pro, Basic, Free, LIVE, Google, 플랫폼명)는 번역하지 않고 코드에 그대로 둔다.
+ * - {name} 같은 중괄호는 치환 변수.
+ * - *Html 키는 마크업(<br>, <span class="accent">)을 포함하므로 구조를 유지한다.
+ */
+export const STRINGS = {
+  /* ── 하단 네비게이션 ── */
+  'nav.home':      { ko: '홈', en: 'Home', ja: 'ホーム', 'zh-CN': '首页', es: 'Inicio', id: 'Beranda', pt: 'Início', fr: 'Accueil', de: 'Start', vi: 'Trang chủ' },
+  'nav.translate': { ko: '번역', en: 'Translate', ja: '翻訳', 'zh-CN': '翻译', es: 'Traducir', id: 'Terjemah', pt: 'Traduzir', fr: 'Traduire', de: 'Übersetzen', vi: 'Dịch' },
+  'nav.my':        { ko: '마이', en: 'My', ja: 'マイ', 'zh-CN': '我的', es: 'Perfil', id: 'Saya', pt: 'Perfil', fr: 'Profil', de: 'Profil', vi: 'Của tôi' },
+
+  /* ── 헤더 / 공통 ── */
+  'aria.search':   { ko: '검색', en: 'Search', ja: '検索', 'zh-CN': '搜索', es: 'Buscar', id: 'Cari', pt: 'Buscar', fr: 'Rechercher', de: 'Suchen', vi: 'Tìm kiếm' },
+  'aria.bell':     { ko: '알림', en: 'Notifications', ja: '通知', 'zh-CN': '通知', es: 'Notificaciones', id: 'Notifikasi', pt: 'Notificações', fr: 'Notifications', de: 'Benachrichtigungen', vi: 'Thông báo' },
+  'aria.close':    { ko: '닫기', en: 'Close', ja: '閉じる', 'zh-CN': '关闭', es: 'Cerrar', id: 'Tutup', pt: 'Fechar', fr: 'Fermer', de: 'Schließen', vi: 'Đóng' },
+
+  'toast.proActive.title': { ko: 'Kaptik Pro 이용 중', en: 'Kaptik Pro is active', ja: 'Kaptik Pro 利用中', 'zh-CN': 'Kaptik Pro 使用中', es: 'Kaptik Pro activo', id: 'Kaptik Pro aktif', pt: 'Kaptik Pro ativo', fr: 'Kaptik Pro actif', de: 'Kaptik Pro aktiv', vi: 'Kaptik Pro đang bật' },
+  'toast.proActive.sub':   { ko: '모든 기능이 활성화돼 있어요', en: 'All features are unlocked', ja: 'すべての機能が使えます', 'zh-CN': '所有功能均已解锁', es: 'Todas las funciones están desbloqueadas', id: 'Semua fitur sudah terbuka', pt: 'Todos os recursos estão liberados', fr: 'Toutes les fonctions sont débloquées', de: 'Alle Funktionen sind freigeschaltet', vi: 'Tất cả tính năng đã được mở' },
+  'toast.searchSoon':      { ko: '검색은 준비 중이에요', en: 'Search is coming soon', ja: '検索は準備中です', 'zh-CN': '搜索功能即将上线', es: 'La búsqueda llegará pronto', id: 'Pencarian segera hadir', pt: 'A busca chega em breve', fr: 'La recherche arrive bientôt', de: 'Die Suche kommt bald', vi: 'Tìm kiếm sắp ra mắt' },
+  'toast.notif.title':     { ko: '알림', en: 'Notification', ja: '通知', 'zh-CN': '通知', es: 'Notificación', id: 'Notifikasi', pt: 'Notificação', fr: 'Notification', de: 'Benachrichtigung', vi: 'Thông báo' },
+  'toast.notif.sub':       { ko: '{artist}가 라이브를 시작했어요', en: '{artist} just went live', ja: '{artist}がライブを始めました', 'zh-CN': '{artist} 开始直播了', es: '{artist} acaba de iniciar un live', id: '{artist} baru saja memulai live', pt: '{artist} acabou de iniciar uma live', fr: '{artist} vient de lancer un live', de: '{artist} ist gerade live gegangen', vi: '{artist} vừa bắt đầu phát trực tiếp' },
+
+  /* ── 홈 ── */
+  'home.myArtists':    { ko: 'My Artists', en: 'My Artists', ja: 'My Artists', 'zh-CN': '我的艺人', es: 'Mis artistas', id: 'Artis Saya', pt: 'Meus artistas', fr: 'Mes artistes', de: 'Meine Artists', vi: 'Nghệ sĩ của tôi' },
+  'home.add':          { ko: '추가', en: 'Add', ja: '追加', 'zh-CN': '添加', es: 'Añadir', id: 'Tambah', pt: 'Adicionar', fr: 'Ajouter', de: 'Hinzufügen', vi: 'Thêm' },
+  'home.kaptikCaption':{ ko: '✦ Kaptik 자막', en: '✦ Kaptik subtitles', ja: '✦ Kaptik 字幕', 'zh-CN': '✦ Kaptik 字幕', es: '✦ Subtítulos Kaptik', id: '✦ Subtitle Kaptik', pt: '✦ Legendas Kaptik', fr: '✦ Sous-titres Kaptik', de: '✦ Kaptik-Untertitel', vi: '✦ Phụ đề Kaptik' },
+  'home.liveNow':      { ko: 'Live Now', en: 'Live Now', ja: 'ライブ配信中', 'zh-CN': '正在直播', es: 'En directo', id: 'Sedang Live', pt: 'Ao vivo agora', fr: 'En direct', de: 'Jetzt live', vi: 'Đang phát trực tiếp' },
+  'home.moreArtists':  { ko: '내 아티스트의 더 많은 소식', en: 'More from your artists', ja: 'あなたのアーティストの最新', 'zh-CN': '你的艺人的更多内容', es: 'Más de tus artistas', id: 'Lebih banyak dari artismu', pt: 'Mais dos seus artistas', fr: 'Plus de vos artistes', de: 'Mehr von deinen Artists', vi: 'Thêm từ nghệ sĩ của bạn' },
+  'toast.addArtist.title': { ko: '아티스트 추가', en: 'Add an artist', ja: 'アーティストを追加', 'zh-CN': '添加艺人', es: 'Añadir un artista', id: 'Tambah artis', pt: 'Adicionar artista', fr: 'Ajouter un artiste', de: 'Artist hinzufügen', vi: 'Thêm nghệ sĩ' },
+  'toast.addArtist.sub':   { ko: '팔로우할 아티스트를 검색해 보세요', en: 'Search for an artist to follow', ja: 'フォローするアーティストを検索しましょう', 'zh-CN': '搜索想关注的艺人', es: 'Busca un artista para seguir', id: 'Cari artis untuk diikuti', pt: 'Busque um artista para seguir', fr: 'Cherchez un artiste à suivre', de: 'Suche einen Artist zum Folgen', vi: 'Tìm nghệ sĩ để theo dõi' },
+
+  /* ── 번역(Translate) ── */
+  'translate.heroHtml': {
+    ko: 'URL을 입력하면<br><span class="accent">실시간 번역 자막</span>이 시작돼요',
+    en: 'Paste a URL and<br><span class="accent">live translated subtitles</span> begin',
+    ja: 'URLを入力すると<br><span class="accent">リアルタイム翻訳字幕</span>が始まります',
+    'zh-CN': '输入网址即可开始<br><span class="accent">实时翻译字幕</span>',
+    es: 'Pega una URL y empiezan los<br><span class="accent">subtítulos traducidos en directo</span>',
+    id: 'Tempel URL dan<br><span class="accent">subtitle terjemahan langsung</span> dimulai',
+    pt: 'Cole uma URL e começam as<br><span class="accent">legendas traduzidas ao vivo</span>',
+    fr: 'Collez une URL et<br><span class="accent">les sous-titres traduits en direct</span> démarrent',
+    de: 'URL einfügen und<br><span class="accent">live übersetzte Untertitel</span> starten',
+    vi: 'Dán URL và<br><span class="accent">phụ đề dịch trực tiếp</span> bắt đầu',
+  },
+  'translate.placeholder': { ko: '영상 링크를 붙여넣으세요', en: 'Paste a video link', ja: '動画リンクを貼り付け', 'zh-CN': '粘贴视频链接', es: 'Pega un enlace de video', id: 'Tempel tautan video', pt: 'Cole um link de vídeo', fr: 'Collez un lien vidéo', de: 'Videolink einfügen', vi: 'Dán liên kết video' },
+  'aria.translateStart':   { ko: '번역 시작', en: 'Start translation', ja: '翻訳を開始', 'zh-CN': '开始翻译', es: 'Iniciar traducción', id: 'Mulai terjemahan', pt: 'Iniciar tradução', fr: 'Lancer la traduction', de: 'Übersetzung starten', vi: 'Bắt đầu dịch' },
+  'toast.translateDone.title': { ko: '번역이 완료됐어요', en: 'Translation complete', ja: '翻訳が完了しました', 'zh-CN': '翻译完成', es: 'Traducción completada', id: 'Terjemahan selesai', pt: 'Tradução concluída', fr: 'Traduction terminée', de: 'Übersetzung fertig', vi: 'Dịch hoàn tất' },
+  'toast.translateDone.sub':   { ko: '실시간 자막을 확인해 보세요', en: 'Check out the live subtitles', ja: 'リアルタイム字幕をご覧ください', 'zh-CN': '快看看实时字幕吧', es: 'Mira los subtítulos en directo', id: 'Lihat subtitle langsungnya', pt: 'Confira as legendas ao vivo', fr: 'Découvrez les sous-titres en direct', de: 'Sieh dir die Live-Untertitel an', vi: 'Xem phụ đề trực tiếp ngay' },
+
+  /* ── 마이(My) ── */
+  'my.banner.descHtml': {
+    ko: 'Live 영상과 유튜브·위버스·인스타 등<br>모든 영상의 번역을 받아보세요',
+    en: 'Get translations for lives and<br>every video on YouTube, Weverse, Instagram',
+    ja: 'ライブやYouTube・Weverse・Insta など<br>すべての動画の翻訳を受け取りましょう',
+    'zh-CN': '获取直播以及 YouTube、Weverse、Ins<br>等所有视频的翻译',
+    es: 'Recibe traducciones de lives y de<br>todo video en YouTube, Weverse, Instagram',
+    id: 'Dapatkan terjemahan untuk live dan<br>semua video di YouTube, Weverse, Instagram',
+    pt: 'Receba traduções de lives e de<br>todo vídeo no YouTube, Weverse, Instagram',
+    fr: 'Recevez la traduction des lives et<br>de toute vidéo sur YouTube, Weverse, Instagram',
+    de: 'Übersetzungen für Lives und<br>jedes Video auf YouTube, Weverse, Instagram',
+    vi: 'Nhận bản dịch cho live và<br>mọi video trên YouTube, Weverse, Instagram',
+  },
+  'my.guest':        { ko: 'Guest', en: 'Guest', ja: 'ゲスト', 'zh-CN': '访客', es: 'Invitado', id: 'Tamu', pt: 'Convidado', fr: 'Invité', de: 'Gast', vi: 'Khách' },
+  'my.loginPrompt':  { ko: '로그인하고 모든 기능을 사용해 보세요', en: 'Log in to use all features', ja: 'ログインしてすべての機能を使いましょう', 'zh-CN': '登录以使用全部功能', es: 'Inicia sesión para usar todo', id: 'Masuk untuk pakai semua fitur', pt: 'Entre para usar todos os recursos', fr: 'Connectez-vous pour tout utiliser', de: 'Melde dich an für alle Funktionen', vi: 'Đăng nhập để dùng mọi tính năng' },
+  'my.loginSignup':  { ko: '로그인 / 회원가입', en: 'Log in / Sign up', ja: 'ログイン / 新規登録', 'zh-CN': '登录 / 注册', es: 'Iniciar sesión / Registrarse', id: 'Masuk / Daftar', pt: 'Entrar / Cadastrar', fr: 'Connexion / Inscription', de: 'Anmelden / Registrieren', vi: 'Đăng nhập / Đăng ký' },
+  'my.group.account':    { ko: '계정', en: 'Account', ja: 'アカウント', 'zh-CN': '账户', es: 'Cuenta', id: 'Akun', pt: 'Conta', fr: 'Compte', de: 'Konto', vi: 'Tài khoản' },
+  'my.group.subtitle':   { ko: '자막', en: 'Subtitles', ja: '字幕', 'zh-CN': '字幕', es: 'Subtítulos', id: 'Subtitle', pt: 'Legendas', fr: 'Sous-titres', de: 'Untertitel', vi: 'Phụ đề' },
+  'my.group.membership': { ko: '멤버십 / 결제', en: 'Membership / Billing', ja: 'メンバーシップ / 決済', 'zh-CN': '会员 / 付款', es: 'Membresía / Pago', id: 'Keanggotaan / Pembayaran', pt: 'Assinatura / Pagamento', fr: 'Abonnement / Paiement', de: 'Mitgliedschaft / Zahlung', vi: 'Thành viên / Thanh toán' },
+  'my.group.dev':        { ko: '개발용 (프로토타입 시연)', en: 'Dev (prototype demo)', ja: '開発用（プロトタイプ）', 'zh-CN': '开发用（原型演示）', es: 'Dev (demo de prototipo)', id: 'Dev (demo prototipe)', pt: 'Dev (demo do protótipo)', fr: 'Dev (démo prototype)', de: 'Dev (Prototyp-Demo)', vi: 'Dev (demo nguyên mẫu)' },
+  'my.row.email':         { ko: '이메일', en: 'Email', ja: 'メール', 'zh-CN': '邮箱', es: 'Correo', id: 'Email', pt: 'E-mail', fr: 'E-mail', de: 'E-Mail', vi: 'Email' },
+  'my.row.provider':      { ko: '로그인 수단', en: 'Sign-in method', ja: 'ログイン方法', 'zh-CN': '登录方式', es: 'Método de acceso', id: 'Metode masuk', pt: 'Método de acesso', fr: 'Méthode de connexion', de: 'Anmeldemethode', vi: 'Phương thức đăng nhập' },
+  'my.row.logout':        { ko: '로그아웃', en: 'Log out', ja: 'ログアウト', 'zh-CN': '退出登录', es: 'Cerrar sesión', id: 'Keluar', pt: 'Sair', fr: 'Déconnexion', de: 'Abmelden', vi: 'Đăng xuất' },
+  'my.row.appLang':       { ko: '앱 언어', en: 'App language', ja: 'アプリの言語', 'zh-CN': '应用语言', es: 'Idioma de la app', id: 'Bahasa aplikasi', pt: 'Idioma do app', fr: "Langue de l'app", de: 'App-Sprache', vi: 'Ngôn ngữ ứng dụng' },
+  'my.row.currentPlan':   { ko: '현재 플랜', en: 'Current plan', ja: '現在のプラン', 'zh-CN': '当前套餐', es: 'Plan actual', id: 'Paket saat ini', pt: 'Plano atual', fr: 'Forfait actuel', de: 'Aktueller Tarif', vi: 'Gói hiện tại' },
+  'my.row.managePayment': { ko: '결제 정보 관리', en: 'Manage billing', ja: '支払い情報の管理', 'zh-CN': '管理付款信息', es: 'Gestionar pago', id: 'Kelola pembayaran', pt: 'Gerenciar pagamento', fr: 'Gérer le paiement', de: 'Zahlung verwalten', vi: 'Quản lý thanh toán' },
+  'my.row.upgrade':       { ko: '업그레이드', en: 'Upgrade', ja: 'アップグレード', 'zh-CN': '升级', es: 'Mejorar plan', id: 'Tingkatkan', pt: 'Fazer upgrade', fr: 'Améliorer', de: 'Upgraden', vi: 'Nâng cấp' },
+  'my.row.loginState':    { ko: '로그인 상태', en: 'Login state', ja: 'ログイン状態', 'zh-CN': '登录状态', es: 'Estado de sesión', id: 'Status masuk', pt: 'Estado de login', fr: 'État de connexion', de: 'Login-Status', vi: 'Trạng thái đăng nhập' },
+  'my.row.plan':          { ko: '요금제', en: 'Plan', ja: 'プラン', 'zh-CN': '套餐', es: 'Plan', id: 'Paket', pt: 'Plano', fr: 'Forfait', de: 'Tarif', vi: 'Gói' },
+  'my.perMonth':          { ko: '/ 월', en: '/ mo', ja: '/ 月', 'zh-CN': '/ 月', es: '/ mes', id: '/ bln', pt: '/ mês', fr: '/ mois', de: '/ Mon.', vi: '/ tháng' },
+  'provider.google':      { ko: 'Google 계정', en: 'Google account', ja: 'Google アカウント', 'zh-CN': 'Google 账户', es: 'Cuenta de Google', id: 'Akun Google', pt: 'Conta Google', fr: 'Compte Google', de: 'Google-Konto', vi: 'Tài khoản Google' },
+  'provider.email':       { ko: '이메일 로그인', en: 'Email login', ja: 'メールログイン', 'zh-CN': '邮箱登录', es: 'Acceso por correo', id: 'Masuk via email', pt: 'Login por e-mail', fr: 'Connexion e-mail', de: 'E-Mail-Login', vi: 'Đăng nhập email' },
+  'my.devNote.in':  { ko: '게이트 동작 확인용 스위치예요. 요금제를 Free로 두고 홈에서 라이브를 눌러보면 결제 유도가 뜹니다.', en: 'Switches to test the access gate. Set the plan to Free and tap a live on Home to trigger the paywall.', ja: 'ゲート動作の確認用スイッチです。プランをFreeにしてホームでライブを押すと課金導線が出ます。', 'zh-CN': '用于测试访问门控的开关。把套餐设为 Free，在首页点击直播即可触发付费引导。', es: 'Interruptores para probar el control de acceso. Pon el plan en Free y toca un live en Inicio para ver el muro de pago.', id: 'Sakelar untuk menguji gerbang akses. Atur paket ke Free lalu ketuk live di Beranda untuk memicu paywall.', pt: 'Interruptores para testar o controle de acesso. Defina o plano como Free e toque numa live na Início para ver o paywall.', fr: "Interrupteurs pour tester le contrôle d'accès. Mettez le forfait sur Free et touchez un live sur l'Accueil pour déclencher le paywall.", de: 'Schalter zum Testen des Zugangs-Gates. Stelle den Tarif auf Free und tippe auf der Startseite auf ein Live, um die Paywall auszulösen.', vi: 'Công tắc để kiểm tra cổng truy cập. Đặt gói về Free rồi chạm vào live ở Trang chủ để kích hoạt paywall.' },
+  'my.devNote.out': { ko: '로그인하지 않으면 유료 요금제를 가질 수 없어요. 먼저 로그인 상태를 켜야 요금제를 바꿀 수 있습니다.', en: "You can't hold a paid plan while logged out. Turn on login first to change the plan.", ja: '未ログインでは有料プランを持てません。先にログイン状態をオンにするとプランを変更できます。', 'zh-CN': '未登录时无法拥有付费套餐。请先打开登录状态再更改套餐。', es: 'No puedes tener un plan de pago sin iniciar sesión. Activa el login primero para cambiar el plan.', id: 'Kamu tidak bisa punya paket berbayar saat keluar. Aktifkan login dulu untuk mengubah paket.', pt: 'Você não pode ter um plano pago deslogado. Ative o login primeiro para mudar o plano.', fr: "Vous ne pouvez pas avoir de forfait payant en étant déconnecté. Activez d'abord la connexion pour changer de forfait.", de: 'Ohne Anmeldung kein bezahlter Tarif. Aktiviere zuerst den Login, um den Tarif zu ändern.', vi: 'Bạn không thể có gói trả phí khi đăng xuất. Hãy bật đăng nhập trước để đổi gói.' },
+  'toast.langChanged': { ko: '앱 언어가 변경됐어요', en: 'App language changed', ja: 'アプリの言語を変更しました', 'zh-CN': '应用语言已更改', es: 'Idioma de la app cambiado', id: 'Bahasa aplikasi diubah', pt: 'Idioma do app alterado', fr: "Langue de l'app modifiée", de: 'App-Sprache geändert', vi: 'Đã đổi ngôn ngữ ứng dụng' },
+  'toast.logout':      { ko: '로그아웃되었어요', en: 'Logged out', ja: 'ログアウトしました', 'zh-CN': '已退出登录', es: 'Sesión cerrada', id: 'Sudah keluar', pt: 'Você saiu', fr: 'Déconnecté', de: 'Abgemeldet', vi: 'Đã đăng xuất' },
+  'toast.proSubscribed.title': { ko: 'Kaptik Pro 구독 중', en: 'Subscribed to Kaptik Pro', ja: 'Kaptik Pro 加入中', 'zh-CN': '已订阅 Kaptik Pro', es: 'Suscrito a Kaptik Pro', id: 'Berlangganan Kaptik Pro', pt: 'Assinante do Kaptik Pro', fr: 'Abonné à Kaptik Pro', de: 'Kaptik Pro abonniert', vi: 'Đang đăng ký Kaptik Pro' },
+  'toast.proSubscribed.sub':   { ko: '다음 결제일: 매월 16일', en: 'Next billing: 16th each month', ja: '次回請求日：毎月16日', 'zh-CN': '下次扣款：每月16日', es: 'Próximo cobro: el 16 de cada mes', id: 'Tagihan berikutnya: tanggal 16 tiap bulan', pt: 'Próxima cobrança: dia 16 de cada mês', fr: 'Prochain paiement : le 16 de chaque mois', de: 'Nächste Abrechnung: am 16. jeden Monats', vi: 'Thanh toán kế tiếp: ngày 16 hằng tháng' },
+
+  /* ── 로그인 화면 ── */
+  'login.taglineHtml': {
+    ko: '좋아하는 아티스트의 라이브를<br>내 언어로 실시간 자막과 함께.',
+    en: "Your favorite artist's lives,<br>with real-time subtitles in your language.",
+    ja: '好きなアーティストのライブを<br>あなたの言語でリアルタイム字幕とともに。',
+    'zh-CN': '用你的语言，实时字幕<br>观看喜欢的艺人的直播。',
+    es: 'Los lives de tu artista favorito,<br>con subtítulos en tiempo real en tu idioma.',
+    id: 'Live artis favoritmu,<br>dengan subtitle real-time dalam bahasamu.',
+    pt: 'As lives do seu artista favorito,<br>com legendas em tempo real no seu idioma.',
+    fr: "Les lives de votre artiste préféré,<br>avec des sous-titres en temps réel dans votre langue.",
+    de: 'Die Lives deines Lieblings-Artists,<br>mit Echtzeit-Untertiteln in deiner Sprache.',
+    vi: 'Live của nghệ sĩ bạn yêu thích,<br>với phụ đề thời gian thực bằng ngôn ngữ của bạn.',
+  },
+  'login.signin':  { ko: '로그인', en: 'Log in', ja: 'ログイン', 'zh-CN': '登录', es: 'Iniciar sesión', id: 'Masuk', pt: 'Entrar', fr: 'Connexion', de: 'Anmelden', vi: 'Đăng nhập' },
+  'login.signup':  { ko: '회원가입', en: 'Sign up', ja: '新規登録', 'zh-CN': '注册', es: 'Registrarse', id: 'Daftar', pt: 'Cadastrar', fr: 'Inscription', de: 'Registrieren', vi: 'Đăng ký' },
+  'login.googleContinue': { ko: 'Google로 계속하기', en: 'Continue with Google', ja: 'Googleで続行', 'zh-CN': '使用 Google 继续', es: 'Continuar con Google', id: 'Lanjut dengan Google', pt: 'Continuar com Google', fr: 'Continuer avec Google', de: 'Mit Google fortfahren', vi: 'Tiếp tục với Google' },
+  'login.googleStart':    { ko: 'Google로 시작하기', en: 'Sign up with Google', ja: 'Googleで始める', 'zh-CN': '使用 Google 注册', es: 'Registrarse con Google', id: 'Daftar dengan Google', pt: 'Cadastrar com Google', fr: "S'inscrire avec Google", de: 'Mit Google registrieren', vi: 'Đăng ký với Google' },
+  'login.orEmailLogin':   { ko: '또는 이메일로 로그인', en: 'or log in with email', ja: 'またはメールでログイン', 'zh-CN': '或使用邮箱登录', es: 'o inicia sesión con correo', id: 'atau masuk dengan email', pt: 'ou entre com e-mail', fr: 'ou connectez-vous par e-mail', de: 'oder mit E-Mail anmelden', vi: 'hoặc đăng nhập bằng email' },
+  'login.orEmailSignup':  { ko: '또는 이메일로 가입', en: 'or sign up with email', ja: 'またはメールで登録', 'zh-CN': '或使用邮箱注册', es: 'o regístrate con correo', id: 'atau daftar dengan email', pt: 'ou cadastre com e-mail', fr: 'ou inscrivez-vous par e-mail', de: 'oder mit E-Mail registrieren', vi: 'hoặc đăng ký bằng email' },
+  'login.ph.email':       { ko: '이메일', en: 'Email', ja: 'メール', 'zh-CN': '邮箱', es: 'Correo', id: 'Email', pt: 'E-mail', fr: 'E-mail', de: 'E-Mail', vi: 'Email' },
+  'login.ph.pw':          { ko: '비밀번호 (6자 이상)', en: 'Password (6+ characters)', ja: 'パスワード（6文字以上）', 'zh-CN': '密码（6位以上）', es: 'Contraseña (6+ caracteres)', id: 'Kata sandi (min. 6 karakter)', pt: 'Senha (6+ caracteres)', fr: 'Mot de passe (6+ caractères)', de: 'Passwort (6+ Zeichen)', vi: 'Mật khẩu (từ 6 ký tự)' },
+  'login.ph.pwConfirm':   { ko: '비밀번호 확인', en: 'Confirm password', ja: 'パスワード確認', 'zh-CN': '确认密码', es: 'Confirmar contraseña', id: 'Konfirmasi kata sandi', pt: 'Confirmar senha', fr: 'Confirmer le mot de passe', de: 'Passwort bestätigen', vi: 'Xác nhận mật khẩu' },
+  'login.terms':          { ko: '계속 진행하면 Kaptik의 약관 및 개인정보 처리방침에 동의하게 됩니다.', en: 'By continuing you agree to Kaptik’s Terms and Privacy Policy.', ja: '続行すると Kaptik の利用規約とプライバシーポリシーに同意したことになります。', 'zh-CN': '继续即表示你同意 Kaptik 的条款与隐私政策。', es: 'Al continuar aceptas los Términos y la Política de privacidad de Kaptik.', id: 'Dengan melanjutkan, kamu menyetujui Ketentuan dan Kebijakan Privasi Kaptik.', pt: 'Ao continuar, você concorda com os Termos e a Política de Privacidade do Kaptik.', fr: 'En continuant, vous acceptez les Conditions et la Politique de confidentialité de Kaptik.', de: 'Mit dem Fortfahren stimmst du den Bedingungen und der Datenschutzrichtlinie von Kaptik zu.', vi: 'Khi tiếp tục, bạn đồng ý với Điều khoản và Chính sách bảo mật của Kaptik.' },
+  'toast.signupDone':     { ko: '가입이 완료됐어요', en: 'Account created', ja: '登録が完了しました', 'zh-CN': '注册完成', es: 'Cuenta creada', id: 'Akun dibuat', pt: 'Conta criada', fr: 'Compte créé', de: 'Konto erstellt', vi: 'Đã tạo tài khoản' },
+  'toast.loginDone':      { ko: '로그인되었어요', en: 'Logged in', ja: 'ログインしました', 'zh-CN': '已登录', es: 'Sesión iniciada', id: 'Berhasil masuk', pt: 'Você entrou', fr: 'Connecté', de: 'Angemeldet', vi: 'Đã đăng nhập' },
+
+  /* ── 인증 검증 오류 ── */
+  'err.emailRequired': { ko: '이메일을 입력해 주세요', en: 'Please enter your email', ja: 'メールを入力してください', 'zh-CN': '请输入邮箱', es: 'Introduce tu correo', id: 'Masukkan email kamu', pt: 'Digite seu e-mail', fr: 'Saisissez votre e-mail', de: 'Bitte E-Mail eingeben', vi: 'Vui lòng nhập email' },
+  'err.emailFormat':   { ko: '올바른 이메일 형식이 아니에요', en: 'That email looks invalid', ja: 'メールの形式が正しくありません', 'zh-CN': '邮箱格式不正确', es: 'Ese correo no es válido', id: 'Format email tidak valid', pt: 'Esse e-mail é inválido', fr: "Cet e-mail n'est pas valide", de: 'Ungültige E-Mail-Adresse', vi: 'Email không hợp lệ' },
+  'err.pwRequired':    { ko: '비밀번호를 입력해 주세요', en: 'Please enter a password', ja: 'パスワードを入力してください', 'zh-CN': '请输入密码', es: 'Introduce una contraseña', id: 'Masukkan kata sandi', pt: 'Digite uma senha', fr: 'Saisissez un mot de passe', de: 'Bitte Passwort eingeben', vi: 'Vui lòng nhập mật khẩu' },
+  'err.pwShort':       { ko: '비밀번호는 6자 이상이어야 해요', en: 'Password must be at least 6 characters', ja: 'パスワードは6文字以上にしてください', 'zh-CN': '密码至少需要 6 位', es: 'La contraseña debe tener al menos 6 caracteres', id: 'Kata sandi minimal 6 karakter', pt: 'A senha precisa de pelo menos 6 caracteres', fr: 'Le mot de passe doit faire au moins 6 caractères', de: 'Das Passwort muss mindestens 6 Zeichen haben', vi: 'Mật khẩu phải có ít nhất 6 ký tự' },
+  'err.pwMismatch':    { ko: '비밀번호가 일치하지 않아요', en: "Passwords don't match", ja: 'パスワードが一致しません', 'zh-CN': '两次密码不一致', es: 'Las contraseñas no coinciden', id: 'Kata sandi tidak cocok', pt: 'As senhas não coincidem', fr: 'Les mots de passe ne correspondent pas', de: 'Passwörter stimmen nicht überein', vi: 'Mật khẩu không khớp' },
+  'err.emailExists':   { ko: '이미 가입된 이메일이에요. 로그인해 주세요.', en: 'This email is already registered. Please log in.', ja: 'このメールは既に登録済みです。ログインしてください。', 'zh-CN': '该邮箱已注册，请登录。', es: 'Este correo ya está registrado. Inicia sesión.', id: 'Email ini sudah terdaftar. Silakan masuk.', pt: 'Este e-mail já está cadastrado. Faça login.', fr: 'Cet e-mail est déjà enregistré. Connectez-vous.', de: 'Diese E-Mail ist bereits registriert. Bitte anmelden.', vi: 'Email này đã được đăng ký. Vui lòng đăng nhập.' },
+  'err.emailNotFound': { ko: '가입되지 않은 이메일이에요', en: 'No account found for this email', ja: 'このメールのアカウントが見つかりません', 'zh-CN': '未找到该邮箱的账户', es: 'No hay cuenta con ese correo', id: 'Tidak ada akun untuk email ini', pt: 'Nenhuma conta para este e-mail', fr: 'Aucun compte pour cet e-mail', de: 'Kein Konto für diese E-Mail', vi: 'Không tìm thấy tài khoản cho email này' },
+  'err.pwWrong':       { ko: '비밀번호가 올바르지 않아요', en: 'Incorrect password', ja: 'パスワードが正しくありません', 'zh-CN': '密码不正确', es: 'Contraseña incorrecta', id: 'Kata sandi salah', pt: 'Senha incorreta', fr: 'Mot de passe incorrect', de: 'Falsches Passwort', vi: 'Mật khẩu không đúng' },
+
+  /* ── 로그인 모달(게이트) ── */
+  'loginModal.title':    { ko: '로그인이 필요해요', en: 'Login required', ja: 'ログインが必要です', 'zh-CN': '需要登录', es: 'Se requiere iniciar sesión', id: 'Perlu masuk', pt: 'Login necessário', fr: 'Connexion requise', de: 'Anmeldung erforderlich', vi: 'Cần đăng nhập' },
+  'loginModal.desc':     { ko: '영상을 번역하고 자막을 보려면 먼저 로그인해 주세요.', en: 'Log in first to translate videos and see subtitles.', ja: '動画を翻訳して字幕を見るには、まずログインしてください。', 'zh-CN': '请先登录以翻译视频并查看字幕。', es: 'Inicia sesión para traducir videos y ver subtítulos.', id: 'Masuk dulu untuk menerjemahkan video dan melihat subtitle.', pt: 'Faça login para traduzir vídeos e ver legendas.', fr: "Connectez-vous d'abord pour traduire les vidéos et voir les sous-titres.", de: 'Melde dich an, um Videos zu übersetzen und Untertitel zu sehen.', vi: 'Hãy đăng nhập trước để dịch video và xem phụ đề.' },
+  'loginModal.or':       { ko: '또는', en: 'or', ja: 'または', 'zh-CN': '或', es: 'o', id: 'atau', pt: 'ou', fr: 'ou', de: 'oder', vi: 'hoặc' },
+  'loginModal.continue': { ko: '계속하기', en: 'Continue', ja: '続行', 'zh-CN': '继续', es: 'Continuar', id: 'Lanjut', pt: 'Continuar', fr: 'Continuer', de: 'Weiter', vi: 'Tiếp tục' },
+
+  /* ── 결제 모달 ── */
+  'payment.title': { ko: '요금제를 선택하세요', en: 'Choose your plan', ja: 'プランを選んでください', 'zh-CN': '选择你的套餐', es: 'Elige tu plan', id: 'Pilih paketmu', pt: 'Escolha seu plano', fr: 'Choisissez votre forfait', de: 'Wähle deinen Tarif', vi: 'Chọn gói của bạn' },
+  'payment.desc':  { ko: '팬 라이프에 맞는 플랜으로 더 많은 영상을 번역해 보세요.', en: 'Pick the plan that fits your fandom life and translate more.', ja: 'ファンライフに合うプランで、もっと多くの動画を翻訳しましょう。', 'zh-CN': '选择适合你饭圈生活的套餐，翻译更多视频。', es: 'Elige el plan ideal para tu vida fan y traduce más.', id: 'Pilih paket yang pas untuk hidup fandom-mu dan terjemahkan lebih banyak.', pt: 'Escolha o plano ideal para sua vida de fã e traduza mais.', fr: 'Choisissez le forfait adapté à votre vie de fan et traduisez plus.', de: 'Wähle den passenden Tarif für dein Fan-Leben und übersetze mehr.', vi: 'Chọn gói phù hợp với đời fan của bạn và dịch nhiều hơn.' },
+  'payment.later': { ko: '나중에', en: 'Later', ja: '後で', 'zh-CN': '稍后', es: 'Más tarde', id: 'Nanti', pt: 'Depois', fr: 'Plus tard', de: 'Später', vi: 'Để sau' },
+  'payment.start': { ko: '{name} 시작하기', en: 'Start {name}', ja: '{name} を始める', 'zh-CN': '开始 {name}', es: 'Empezar {name}', id: 'Mulai {name}', pt: 'Começar {name}', fr: 'Démarrer {name}', de: '{name} starten', vi: 'Bắt đầu {name}' },
+  'plan.basic.tagline': { ko: '라이브 순간을 놓치고 싶지 않은 팬을 위해', en: 'For fans who just want to catch every live moment', ja: 'ライブの瞬間を逃したくないファンへ', 'zh-CN': '献给不想错过每个直播瞬间的粉丝', es: 'Para fans que no quieren perderse ningún live', id: 'Untuk fans yang tak mau lewatkan momen live', pt: 'Para fãs que não querem perder nenhum live', fr: 'Pour les fans qui ne veulent rater aucun live', de: 'Für Fans, die keinen Live-Moment verpassen wollen', vi: 'Dành cho fan không muốn bỏ lỡ khoảnh khắc live nào' },
+  'plan.basic.f1': { ko: '무제한 라이브 영상 시청', en: 'Unlimited live video viewing', ja: 'ライブ動画の無制限視聴', 'zh-CN': '无限观看直播视频', es: 'Lives ilimitados', id: 'Tonton live tanpa batas', pt: 'Lives ilimitados', fr: 'Visionnage de lives illimité', de: 'Unbegrenztes Live-Anschauen', vi: 'Xem video live không giới hạn' },
+  'plan.basic.f2': { ko: '새 라이브 시작 알림', en: 'Get notified for new lives', ja: '新しいライブの通知', 'zh-CN': '新直播开始通知', es: 'Avisos de nuevos lives', id: 'Notifikasi live baru', pt: 'Avisos de novas lives', fr: 'Alertes pour les nouveaux lives', de: 'Benachrichtigung bei neuen Lives', vi: 'Thông báo khi có live mới' },
+  'plan.pro.tagline': { ko: '모든 영상에 자막을 원하는 팬을 위해', en: 'For fans who want subtitles on everything', ja: 'すべての動画に字幕がほしいファンへ', 'zh-CN': '献给想给所有视频加字幕的粉丝', es: 'Para fans que quieren subtítulos en todo', id: 'Untuk fans yang ingin subtitle di semua video', pt: 'Para fãs que querem legendas em tudo', fr: 'Pour les fans qui veulent des sous-titres partout', de: 'Für Fans, die überall Untertitel wollen', vi: 'Dành cho fan muốn phụ đề trên mọi video' },
+  'plan.pro.f1': { ko: '모든 플랫폼 영상 무제한 자막', en: 'Unlimited subtitles on every platform', ja: '全プラットフォームの動画に無制限字幕', 'zh-CN': '所有平台视频无限字幕', es: 'Subtítulos ilimitados en toda plataforma', id: 'Subtitle tanpa batas di semua platform', pt: 'Legendas ilimitadas em toda plataforma', fr: 'Sous-titres illimités sur toutes les plateformes', de: 'Unbegrenzte Untertitel auf jeder Plattform', vi: 'Phụ đề không giới hạn trên mọi nền tảng' },
+  'plan.pro.f2': { ko: '라이브 알림 포함', en: 'Live notifications included', ja: 'ライブ通知付き', 'zh-CN': '含直播通知', es: 'Notificaciones de live incluidas', id: 'Termasuk notifikasi live', pt: 'Notificações de live incluídas', fr: 'Notifications de live incluses', de: 'Live-Benachrichtigungen inklusive', vi: 'Bao gồm thông báo live' },
+  'plan.pro.f3': { ko: '무제한 라이브 영상 시청', en: 'Unlimited live video viewing', ja: 'ライブ動画の無制限視聴', 'zh-CN': '无限观看直播视频', es: 'Lives ilimitados', id: 'Tonton live tanpa batas', pt: 'Lives ilimitados', fr: 'Visionnage de lives illimité', de: 'Unbegrenztes Live-Anschauen', vi: 'Xem video live không giới hạn' },
+  'toast.planActive.title': { ko: 'Kaptik {name} 활성화됐어요', en: 'Kaptik {name} is now active', ja: 'Kaptik {name} が有効になりました', 'zh-CN': 'Kaptik {name} 已激活', es: 'Kaptik {name} ya está activo', id: 'Kaptik {name} kini aktif', pt: 'Kaptik {name} está ativo', fr: 'Kaptik {name} est activé', de: 'Kaptik {name} ist jetzt aktiv', vi: 'Kaptik {name} đã được kích hoạt' },
+  'toast.planActive.sub':   { ko: '이제 더 많은 기능을 사용할 수 있어요', en: 'You can use more features now', ja: 'もっと多くの機能が使えます', 'zh-CN': '现在可以使用更多功能了', es: 'Ahora puedes usar más funciones', id: 'Sekarang kamu bisa pakai lebih banyak fitur', pt: 'Agora você pode usar mais recursos', fr: 'Vous pouvez utiliser plus de fonctions maintenant', de: 'Du kannst jetzt mehr Funktionen nutzen', vi: 'Giờ bạn có thể dùng nhiều tính năng hơn' },
+
+  /* ── Processing 오버레이 ── */
+  'proc.title':      { ko: '자막을 만드는 중…', en: 'Creating subtitles…', ja: '字幕を作成中…', 'zh-CN': '正在生成字幕…', es: 'Creando subtítulos…', id: 'Membuat subtitle…', pt: 'Criando legendas…', fr: 'Création des sous-titres…', de: 'Untertitel werden erstellt…', vi: 'Đang tạo phụ đề…' },
+  'proc.analyze':    { ko: '링크 분석', en: 'Analyzing link', ja: 'リンクを解析', 'zh-CN': '分析链接', es: 'Analizando enlace', id: 'Menganalisis tautan', pt: 'Analisando link', fr: 'Analyse du lien', de: 'Link wird analysiert', vi: 'Phân tích liên kết' },
+  'proc.extractOk':  { ko: '스크립트 추출 (성공)', en: 'Script extracted (success)', ja: 'スクリプト抽出（成功）', 'zh-CN': '提取脚本（成功）', es: 'Guion extraído (correcto)', id: 'Skrip diekstrak (berhasil)', pt: 'Roteiro extraído (sucesso)', fr: 'Script extrait (réussi)', de: 'Skript extrahiert (erfolgreich)', vi: 'Đã trích xuất kịch bản (thành công)' },
+  'proc.extractTry': { ko: '스크립트 추출 시도', en: 'Trying script extraction', ja: 'スクリプト抽出を試行', 'zh-CN': '尝试提取脚本', es: 'Intentando extraer guion', id: 'Mencoba ekstrak skrip', pt: 'Tentando extrair roteiro', fr: 'Tentative d’extraction du script', de: 'Skript-Extraktion wird versucht', vi: 'Đang thử trích xuất kịch bản' },
+  'proc.sttSkip':    { ko: 'STT 생략 (스크립트 양호)', en: 'STT skipped (script is good)', ja: 'STT省略（スクリプト良好）', 'zh-CN': '跳过语音识别（脚本良好）', es: 'STT omitido (guion correcto)', id: 'STT dilewati (skrip bagus)', pt: 'STT ignorado (roteiro bom)', fr: 'STT ignoré (script correct)', de: 'STT übersprungen (Skript gut)', vi: 'Bỏ qua STT (kịch bản tốt)' },
+  'proc.sttDo':      { ko: '음성 인식(STT) 처리', en: 'Speech recognition (STT)', ja: '音声認識（STT）処理', 'zh-CN': '语音识别（STT）处理', es: 'Reconocimiento de voz (STT)', id: 'Pengenalan suara (STT)', pt: 'Reconhecimento de voz (STT)', fr: 'Reconnaissance vocale (STT)', de: 'Spracherkennung (STT)', vi: 'Nhận dạng giọng nói (STT)' },
+  'proc.translate':  { ko: '다국어 번역', en: 'Multilingual translation', ja: '多言語翻訳', 'zh-CN': '多语言翻译', es: 'Traducción multilingüe', id: 'Terjemahan multibahasa', pt: 'Tradução multilíngue', fr: 'Traduction multilingue', de: 'Mehrsprachige Übersetzung', vi: 'Dịch đa ngôn ngữ' },
+
+  /* ── 플레이어 ── */
+  'player.kaptikLive': { ko: 'Kaptik 실시간 자막', en: 'Kaptik real-time subtitles', ja: 'Kaptik リアルタイム字幕', 'zh-CN': 'Kaptik 实时字幕', es: 'Subtítulos en tiempo real de Kaptik', id: 'Subtitle real-time Kaptik', pt: 'Legendas em tempo real do Kaptik', fr: 'Sous-titres en temps réel Kaptik', de: 'Kaptik Echtzeit-Untertitel', vi: 'Phụ đề thời gian thực Kaptik' },
+  'player.mockTag':    { ko: '웹 프로토타입 — 위버스 영상은 실제 앱(WebView)에서 재생됩니다', en: 'Web prototype — Weverse videos play in the real app (WebView)', ja: 'Webプロトタイプ — Weverse動画は実アプリ（WebView）で再生されます', 'zh-CN': '网页原型 — Weverse 视频将在真实 App（WebView）中播放', es: 'Prototipo web — los videos de Weverse se reproducen en la app real (WebView)', id: 'Prototipe web — video Weverse diputar di app asli (WebView)', pt: 'Protótipo web — vídeos da Weverse tocam no app real (WebView)', fr: "Prototype web — les vidéos Weverse se lisent dans l'app réelle (WebView)", de: 'Web-Prototyp — Weverse-Videos laufen in der echten App (WebView)', vi: 'Nguyên mẫu web — video Weverse phát trong app thật (WebView)' },
+  'player.latest':     { ko: '↑ 최신', en: '↑ Latest', ja: '↑ 最新', 'zh-CN': '↑ 最新', es: '↑ Reciente', id: '↑ Terbaru', pt: '↑ Recente', fr: '↑ Récent', de: '↑ Neueste', vi: '↑ Mới nhất' },
+  'aria.playerSettings': { ko: '설정 / 자막 언어', en: 'Settings / subtitle language', ja: '設定 / 字幕言語', 'zh-CN': '设置 / 字幕语言', es: 'Ajustes / idioma de subtítulos', id: 'Pengaturan / bahasa subtitle', pt: 'Ajustes / idioma das legendas', fr: 'Réglages / langue des sous-titres', de: 'Einstellungen / Untertitelsprache', vi: 'Cài đặt / ngôn ngữ phụ đề' },
+  'aria.playerExit':     { ko: '나가기', en: 'Exit', ja: '退出', 'zh-CN': '退出', es: 'Salir', id: 'Keluar', pt: 'Sair', fr: 'Quitter', de: 'Verlassen', vi: 'Thoát' },
+  'aria.playPause':      { ko: '재생/일시정지', en: 'Play/Pause', ja: '再生/一時停止', 'zh-CN': '播放/暂停', es: 'Reproducir/Pausar', id: 'Putar/Jeda', pt: 'Reproduzir/Pausar', fr: 'Lecture/Pause', de: 'Wiedergabe/Pause', vi: 'Phát/Tạm dừng' },
+
+  /* ── 아티스트 검색 / 팔로우 (예시는 한/영, 그 외 언어는 영어로 폴백) ── */
+  'artist.search.title':       { ko: '아티스트 추가', en: 'Add artists' },
+  'artist.search.placeholder': { ko: '아티스트 이름 검색', en: 'Search by artist name' },
+  'artist.search.hint':        { ko: '좋아하는 아티스트를 검색해 팔로우해 보세요', en: 'Search for your favorite artists to follow' },
+  'artist.search.empty':       { ko: '검색 결과가 없어요', en: 'No results' },
+  'artist.follow':             { ko: '팔로우', en: 'Follow' },
+  'artist.following':          { ko: '팔로잉', en: 'Following' },
+  'artist.notify':             { ko: '라이브 알림', en: 'Live alerts' },
+  'toast.followed':            { ko: '{name} 팔로우했어요', en: 'Following {name}' },
+  'toast.unfollowed':          { ko: '{name} 팔로우를 취소했어요', en: 'Unfollowed {name}' },
+
+  'my.row.follows':       { ko: '팔로우한 아티스트', en: 'Followed artists' },
+  'followed.title':       { ko: '팔로우한 아티스트', en: 'Followed artists' },
+  'followed.empty':       { ko: '아직 팔로우한 아티스트가 없어요', en: "You're not following anyone yet" },
+  'followed.emptyHint':   { ko: '홈에서 + 버튼으로 아티스트를 추가해 보세요', en: 'Add artists with the + button on Home' },
+  'followed.count':       { ko: '{n}명 팔로잉', en: 'Following {n}' },
+  'followed.notifOn':     { ko: '알림 켜짐', en: 'Alerts on' },
+  'followed.notifOff':    { ko: '알림 꺼짐', en: 'Alerts off' },
+
+  /* ── 멤버십 관리(결제 정보) ── */
+  'billing.title':        { ko: '멤버십 관리', en: 'Manage membership' },
+  'billing.nextBilling':  { ko: '다음 결제일', en: 'Next billing' },
+  'billing.nextValue':    { ko: '매월 16일', en: '16th each month' },
+  'billing.changePlan':   { ko: '요금제 변경', en: 'Change plan' },
+  'billing.cancel':       { ko: '구독 해지', en: 'Cancel subscription' },
+  'billing.cancelConfirm':{ ko: '정말 해지하시겠어요? 남은 기간 동안은 계속 이용할 수 있어요.', en: 'Cancel your subscription? You can keep using it until the period ends.' },
+  'toast.canceled':       { ko: '구독이 해지됐어요', en: 'Subscription canceled' },
+  'common.close':         { ko: '닫기', en: 'Close' },
+  'common.keep':          { ko: '계속 이용', en: 'Keep it' },
+};

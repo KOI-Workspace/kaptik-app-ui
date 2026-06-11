@@ -3,6 +3,7 @@
  */
 import { getState } from './state.js';
 import { openPaymentModal, toast } from './modals.js';
+import { t } from './i18n.js';
 
 const ICON_SEARCH = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`;
 const ICON_BELL = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>`;
@@ -22,8 +23,8 @@ export function headerHTML({ showSearch = true, hasNotif = true } = {}) {
       <div class="logo">kap<span>tik</span></div>
       <div class="header-actions">
         ${upgrade}
-        ${showSearch ? `<button class="icon-btn" data-act="search" aria-label="검색">${ICON_SEARCH}</button>` : ''}
-        <button class="icon-btn" data-act="bell" aria-label="알림">
+        ${showSearch ? `<button class="icon-btn" data-act="search" aria-label="${t('aria.search')}">${ICON_SEARCH}</button>` : ''}
+        <button class="icon-btn" data-act="bell" aria-label="${t('aria.bell')}">
           ${ICON_BELL}${hasNotif ? '<span class="notif-badge"></span>' : ''}
         </button>
       </div>
@@ -35,11 +36,11 @@ export function headerHTML({ showSearch = true, hasNotif = true } = {}) {
 export function bindHeader(root) {
   const up = root.querySelector('[data-act="upgrade"]');
   if (up) up.addEventListener('click', () => {
-    if (getState().isPaid) toast({ title: 'Kaptik Pro 이용 중', sub: '모든 기능이 활성화돼 있어요', type: 'check' });
+    if (getState().isPaid) toast({ title: t('toast.proActive.title'), sub: t('toast.proActive.sub'), type: 'check' });
     else openPaymentModal();
   });
   const search = root.querySelector('[data-act="search"]');
-  if (search) search.addEventListener('click', () => toast({ title: '검색은 준비 중이에요', type: 'check' }));
+  if (search) search.addEventListener('click', () => toast({ title: t('toast.searchSoon'), type: 'check' }));
   const bell = root.querySelector('[data-act="bell"]');
-  if (bell) bell.addEventListener('click', () => toast({ title: '알림', sub: 'BTS가 라이브를 시작했어요', type: 'live' }));
+  if (bell) bell.addEventListener('click', () => toast({ title: t('toast.notif.title'), sub: t('toast.notif.sub', { artist: 'BTS' }), type: 'live' }));
 }

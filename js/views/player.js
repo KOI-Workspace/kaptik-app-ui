@@ -10,6 +10,7 @@
  */
 import { navigate } from '../router.js';
 import { getState } from '../state.js';
+import { t } from '../i18n.js';
 import { whenYTReady } from '../ytapi.js';
 import {
   SUBTITLES, ANNOTATIONS, SPEAKER_COLORS, SPEAKER_INITIALS, SPEAKER_IMAGES,
@@ -279,11 +280,11 @@ function videoAreaHTML(source) {
       <div class="mock-mute"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg></div>
       <div class="mock-center">
         <span class="mock-live"><span class="mock-live-dot"></span>LIVE</span>
-        <button class="mock-play" id="mockPlay" aria-label="재생/일시정지">
+        <button class="mock-play" id="mockPlay" aria-label="${t('aria.playPause')}">
           <svg class="ic-pause" width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
         </button>
       </div>
-      <div class="mock-tag">웹 프로토타입 — 위버스 영상은 실제 앱(WebView)에서 재생됩니다</div>
+      <div class="mock-tag">${t('player.mockTag')}</div>
     </div>`;
 }
 
@@ -313,15 +314,15 @@ export function renderPlayer(params, root) {
       </div>
 
       <div class="sheet" id="sheet">
-        <button class="scroll-to-top-btn" id="scrollToTopBtn">↑ Latest</button>
+        <button class="scroll-to-top-btn" id="scrollToTopBtn">${t('player.latest')}</button>
         <div class="sheet-content" id="sheetContent"></div>
       </div>
 
       <div class="fab-group">
-        <button class="player-fab" id="langFab" aria-label="설정 / 자막 언어">
+        <button class="player-fab" id="langFab" aria-label="${t('aria.playerSettings')}">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="6" x2="8" y2="3"/><line x1="8" y1="6" x2="8" y2="9"/><line x1="4" y1="18" x2="20" y2="18"/><line x1="16" y1="18" x2="16" y2="15"/><line x1="16" y1="18" x2="16" y2="21"/></svg>
         </button>
-        <button class="player-fab" id="exitFab" aria-label="나가기">
+        <button class="player-fab" id="exitFab" aria-label="${t('aria.playerExit')}">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         </button>
       </div>
@@ -330,7 +331,7 @@ export function renderPlayer(params, root) {
         <div class="lang-panel-title">${escapeHtml(title)}</div>
         <div class="lang-panel-meta">
           ${isLive ? `<div class="live-chip"><span class="live-dot"></span>LIVE</div>` : ''}
-          <span class="meta-text">${escapeHtml(artist)} · Kaptik 실시간 자막</span>
+          <span class="meta-text">${escapeHtml(artist)} · ${t('player.kaptikLive')}</span>
         </div>
         <div class="lang-panel-divider"></div>
         <select id="langSelect" class="lang-select">
