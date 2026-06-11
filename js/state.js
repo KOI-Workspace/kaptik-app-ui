@@ -9,6 +9,8 @@ const STORAGE_KEY = 'kaptik.state.v1';
 
 const DEFAULTS = {
   isLoggedIn: false,
+  // 온보딩 완료 여부 (false면 부팅 시 온보딩으로 진입)
+  onboardingDone: false,
   // 팔로우한 아티스트 — [{ id, notify }]. notify=라이브 시작 알림 수신 여부
   follows: DEFAULT_FOLLOWS.map((f) => ({ ...f })),
   // 요금제 — 'free' | 'basic' | 'pro' (단일 진실 소스)
@@ -120,6 +122,7 @@ export function logout() {
   state.isLoggedIn = false;
   state.plan = 'free';
   state.isPaid = false;
+  state.onboardingDone = false; // 로그아웃하면 다시 온보딩(로그인)부터
   state.user = { ...DEFAULTS.user };
   persist();
 }

@@ -27,8 +27,12 @@ export function renderOnboarding(_params, root) {
   let authMode = 'signin';   // auth 단계 내부 모드
   let upsell = false;        // plan 단계가 기존 유저 업셀인지
   let chosenPlan = 'pro';    // plan 단계 선택값
+  let countdownTimer = null; // plan 단계 X 버튼 카운트다운
+
+  const clearCountdown = () => { if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; } };
 
   const finish = () => {
+    clearCountdown();
     setState({ onboardingDone: true });
     toast({ title: t('toast.welcome'), type: 'check' });
     navigate('home');
@@ -171,11 +175,20 @@ export function renderOnboarding(_params, root) {
       </button>`;
   }
 
-  /* ── 3) 요금제 (신규: 소프트 / 기존 Free·Basic: 업셀) ── */
+  /* ── 3) 요금제 / 결제 유도 ──
+   * 노출 플랜은 현재 요금제 기준:
+   *   - Free(신규 포함) → Basic + Pro 둘 다
+   *   - Basic           → Pro 만
+   * X(닫기) 버튼은 5초가 지나야 활성화된다(결제 유도 강화). */
   function renderPlan() {
+    clearCountdown();
+    const curPlan = getState().plan;
+    const plansToShow = curPlan === 'basic' ? ['pro'] : ['basic', 'pro'];
+    if (!plansToShow.includes(chosenPlan)) chosenPlan = 'pro';
+
     const planCard = (key) => {
       const p = PLANS[key];
-      const rec = key === 'pro';
+      const rec = key === 'pro' && plansToShow.length > 1;
       return `
         <button class="plan-option ${key === chosenPlan ? 'selected' : ''}" data-plan="${key}">
           <div class="plan-option-head">
@@ -189,31 +202,45 @@ export function renderOnboarding(_params, root) {
 
     root.innerHTML = `
       <div class="onb view fullscreen">
+        <button class="onb-close" id="onbClose" disabled aria-label="${t('aria.close')}"><span id="onbCd">5</span></button>
         ${upsell ? '' : '<div class="onb-progress"><span></span><span></span><span class="on"></span></div>'}
         <div class="onb-body scroll">
           <h1 class="onb-title">${upsell ? t('onb.upsell.title') : t('onb.plan.title')}</h1>
           <p class="onb-sub">${upsell ? t('onb.upsell.sub') : t('onb.plan.sub')}</p>
           <div class="plan-options" style="margin-top:18px;">
-            ${planCard('basic')}
-            ${planCard('pro')}
+            ${plansToShow.map(planCard).join('')}
           </div>
         </div>
         <div class="onb-foot">
           <button class="btn-primary" id="startBtn">${t('onb.start')}</button>
-          <button class="onb-skip" id="freeBtn">${t('onb.plan.freeStart')}</button>
         </div>
       </div>
     `;
 
-    const startBtn = root.querySelector('#startBtn');
     root.querySelectorAll('.plan-option').forEach((el) => {
       el.addEventListener('click', () => {
         chosenPlan = el.dataset.plan;
         root.querySelectorAll('.plan-option').forEach((o) => o.classList.toggle('selected', o === el));
       });
     });
-    startBtn.addEventListener('click', () => { setPlan(chosenPlan); finish(); });
-    root.querySelector('#freeBtn').addEventListener('click', finish); // Free로 둘러보기
+    root.querySelector('#startBtn').addEventListener('click', () => { setPlan(chosenPlan); finish(); });
+
+    // 5초 카운트다운 → X 버튼 활성화 (활성화 전 클릭은 무시)
+    const closeBtn = root.querySelector('#onbClose');
+    const cdEl = root.querySelector('#onbCd');
+    let remain = 5;
+    countdownTimer = setInterval(() => {
+      remain -= 1;
+      if (remain <= 0) {
+        clearCountdown();
+        closeBtn.classList.add('ready');
+        closeBtn.removeAttribute('disabled');
+        closeBtn.textContent = '✕';
+      } else {
+        cdEl.textContent = remain;
+      }
+    }, 1000);
+    closeBtn.addEventListener('click', () => { if (!closeBtn.hasAttribute('disabled')) finish(); });
   }
 
   function render() {
@@ -224,4 +251,5 @@ export function renderOnboarding(_params, root) {
   }
 
   render();
+  return clearCountdown; // 뷰 전환 시 카운트다운 타이머 정리
 }

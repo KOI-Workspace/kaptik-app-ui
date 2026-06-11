@@ -713,3 +713,77 @@
 }
 .empty-hint .big { font-size: 16px; font-weight: 700; color: var(--text-2); margin-bottom: 8px; }
 .empty-hint .small { font-size: 13px; font-weight: 500; line-height: 1.5; }
+
+/* ─────────────────────────────────────────
+   온보딩
+   ───────────────────────────────────────── */
+.onb {
+  min-height: 100dvh;
+  display: flex; flex-direction: column;
+  padding: calc(20px + env(safe-area-inset-top)) 24px calc(20px + env(safe-area-inset-bottom));
+  position: relative;
+}
+.onb-body { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.onb-body.scroll { justify-content: flex-start; overflow-y: auto; padding-top: 8px; }
+.onb-title { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
+.onb-sub { font-size: 15px; color: var(--text-2); font-weight: 500; line-height: 1.5; margin-bottom: 24px; }
+.onb-label { font-size: 14px; font-weight: 800; margin: 22px 2px 10px; }
+.onb-hint { font-size: 13px; color: var(--text-3); font-weight: 500; margin: -6px 2px 12px; }
+.onb-terms { text-align: center; font-size: 12px; color: var(--text-3); font-weight: 500; margin-top: 16px; line-height: 1.5; }
+.onb-foot { padding-top: 14px; }
+.onb-skip {
+  display: block; width: 100%; margin-top: 12px;
+  background: none; border: none; cursor: pointer;
+  font-size: 14px; font-weight: 600; color: var(--text-3); font-family: var(--font);
+}
+
+/* 진행 점 */
+.onb-progress { display: flex; gap: 6px; justify-content: center; padding: 6px 0 18px; }
+.onb-progress span { width: 7px; height: 7px; border-radius: 50%; background: var(--border); }
+.onb-progress span.on { background: var(--brand); width: 20px; border-radius: var(--r-pill); }
+
+/* 5초 후 활성화되는 닫기 버튼 */
+.onb-close {
+  position: absolute; top: calc(14px + env(safe-area-inset-top)); right: 16px; z-index: 5;
+  width: 32px; height: 32px; border-radius: 50%; border: none;
+  background: var(--surface-el); color: var(--text-3);
+  font-size: 14px; font-weight: 700; cursor: default;
+  display: flex; align-items: center; justify-content: center;
+}
+.onb-close[disabled] { opacity: 0.55; }
+.onb-close.ready { color: var(--text-1); cursor: pointer; }
+
+/* 언어 칩 */
+.lang-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.lang-chip {
+  border: 1.5px solid var(--border); background: var(--surface-el); color: var(--text-2);
+  font-size: 14px; font-weight: 600; font-family: var(--font);
+  padding: 9px 14px; border-radius: var(--r-pill); cursor: pointer;
+  transition: border-color var(--t-base), color var(--t-base);
+}
+.lang-chip.on { border-color: var(--brand); color: var(--text-1); background: var(--brand-soft); }
+
+/* 아티스트 선택 그리드 */
+.artist-pick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 8px; }
+.artist-pick { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 0; }
+.ap-avatar {
+  position: relative; width: 64px; height: 64px; border-radius: 50%;
+  background: #fff; display: flex; align-items: center; justify-content: center; overflow: hidden;
+  border: 2.5px solid transparent; transition: border-color var(--t-base);
+}
+.artist-pick.on .ap-avatar { border-color: var(--brand); }
+.ap-avatar img { width: 72%; height: 72%; object-fit: contain; }
+.ap-initials { font-size: 18px; font-weight: 800; color: var(--text-1); }
+.ap-avatar .ap-check {
+  position: absolute; right: -2px; bottom: -2px; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--brand); display: none; align-items: center; justify-content: center;
+  border: 2px solid var(--page);
+}
+.artist-pick.on .ap-check { display: flex; }
+.ap-name { font-size: 12px; font-weight: 600; color: var(--text-2); text-align: center; line-height: 1.2; }
+
+/* 추천 배지 (요금제 카드) */
+.plan-rec {
+  font-size: 10px; font-weight: 800; color: #fff; background: var(--brand);
+  padding: 2px 7px; border-radius: var(--r-pill); vertical-align: middle; margin-left: 4px;
+}

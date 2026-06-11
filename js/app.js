@@ -7,6 +7,8 @@ import { renderTranslate } from './views/translate.js';
 import { renderMy } from './views/my.js';
 import { renderPlayer } from './views/player.js';
 import { renderLogin } from './views/login.js';
+import { renderOnboarding } from './views/onboarding.js';
+import { getState } from './state.js';
 import { t } from './i18n.js';
 
 /* ── 하단 네비게이션 (Home / Translate / My) — label은 i18n 키 ── */
@@ -44,6 +46,12 @@ registerRoute('translate', renderTranslate);
 registerRoute('my', renderMy);
 registerRoute('player', renderPlayer);
 registerRoute('login', renderLogin);
+registerRoute('onboarding', renderOnboarding);
 
 renderNav();
-startRouter('home');
+
+// 부팅 라우팅 — 온보딩 미완료면 온보딩부터, 완료 유저가 온보딩 해시면 홈으로 교정
+const onboarded = getState().onboardingDone;
+if (!onboarded) location.hash = '#/onboarding';
+else if (location.hash === '#/onboarding') location.hash = '#/home';
+startRouter(onboarded ? 'home' : 'onboarding');

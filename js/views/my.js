@@ -3,7 +3,7 @@
  */
 import { headerHTML, bindHeader } from '../ui.js';
 import { navigate } from '../router.js';
-import { getState, setPlan, logout, login } from '../state.js';
+import { getState, setState, setPlan, logout, login } from '../state.js';
 import { openPaymentModal, openFollowedArtists, openBillingModal, toast, PLANS } from '../modals.js';
 import { t, setLang } from '../i18n.js';
 import { LANGUAGES } from '../data.js';
@@ -117,9 +117,9 @@ export function renderMy(_params, root) {
 
   root.querySelector('#loginBtn')?.addEventListener('click', () => navigate('login'));
   root.querySelector('#logoutRow')?.addEventListener('click', () => {
-    logout();
+    logout();                       // onboardingDone도 false로 초기화됨
     toast({ title: t('toast.logout'), type: 'check' });
-    reRender();
+    navigate('onboarding');         // 로그아웃하면 온보딩(로그인)부터 다시
   });
 
   // 앱 언어 변경 — UI 전체가 해당 언어로 다시 그려진다 (langchange 이벤트 → app.js)
@@ -139,11 +139,10 @@ export function renderMy(_params, root) {
     else openBillingModal({ onChange: reRender });
   });
 
-  // 개발용 토글
+  // 개발용 토글 — 로그인 ON 시 온보딩은 건너뛴 것으로 처리(시연 편의)
   root.querySelector('#tglLogin').addEventListener('click', () => {
-    if (s.isLoggedIn) logout();      // 로그아웃 시 요금제도 free로 초기화됨
-    else login('email', 'dev@kaptik.app');
-    reRender();
+    if (s.isLoggedIn) { logout(); navigate('onboarding'); }
+    else { login('email', 'dev@kaptik.app'); setState({ onboardingDone: true }); reRender(); }
   });
 
   // 요금제 세그먼트 — 로그인 상태에서만 동작 (로그아웃이면 버튼이 disabled)
