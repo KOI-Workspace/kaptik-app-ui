@@ -38,6 +38,7 @@ let isUserScrolled = false;
 
 let landscapeSubtitleOverlay = null;
 let panelCollapsed = false;
+let overlaySettings = { showSpeaker: true, showTranscript: true, subtitleLines: 2, subtitleSize: 80, bgOpacity: 65 };
 
 let activeContextKey = null, activeContextEl = null;
 
@@ -169,10 +170,7 @@ function updateSubtitle(time) {
 
   subtitleList.querySelector('.subtitle-row.current')?.classList.remove('current');
 
-  // 가로 모드 오버레이 텍스트 동기화
-  if (landscapeSubtitleOverlay) {
-    landscapeSubtitleOverlay.textContent = cur ? (cur[currentLang] || cur.en || '') : '';
-  }
+  updateOverlay(cur || null);
 
   if (!cur) return;
   subtitleList
@@ -289,6 +287,7 @@ export function renderPlayer(params, root) {
   isUserScrolled = false;
   panelCollapsed = false;
   landscapeSubtitleOverlay = null;
+  overlaySettings = { showSpeaker: true, showTranscript: true, subtitleLines: 2, subtitleSize: 80, bgOpacity: 65 };
   currentLang = getState().defaultLang || 'en';
   subtitlesReady = !(params && params.subtitlePending);
 
@@ -333,10 +332,43 @@ export function renderPlayer(params, root) {
           ${isLive ? `<div class="live-chip"><span class="live-dot"></span>LIVE</div>` : ''}
           <span class="meta-text">${escapeHtml(artist)} · ${t('player.kaptikLive')}</span>
         </div>
+        <div class="lang-panel-divider lang-panel-header-divider"></div>
+        <div class="settings-row">
+          <span class="settings-label">Language</span>
+          <select id="langSelect" class="lang-select lang-select-sm">
+            ${LANGUAGES.map((l) => `<option value="${l.code}" ${l.code === currentLang ? 'selected' : ''}>${l.label}</option>`).join('')}
+          </select>
+        </div>
         <div class="lang-panel-divider"></div>
-        <select id="langSelect" class="lang-select">
-          ${LANGUAGES.map((l) => `<option value="${l.code}" ${l.code === currentLang ? 'selected' : ''}>${l.label}</option>`).join('')}
-        </select>
+        <div class="settings-row">
+          <span class="settings-label">Speaker ID</span>
+          <button class="toggle-pill${overlaySettings.showSpeaker ? ' on' : ''}" id="speakerToggle"></button>
+        </div>
+        <div class="settings-row">
+          <span class="settings-label">Transcript</span>
+          <button class="toggle-pill${overlaySettings.showTranscript ? ' on' : ''}" id="transcriptToggle"></button>
+        </div>
+        <div class="settings-row">
+          <span class="settings-label">Lines</span>
+          <div class="seg-ctrl">
+            <button class="seg-btn${overlaySettings.subtitleLines === 1 ? ' active' : ''}" data-lines="1">1</button>
+            <button class="seg-btn${overlaySettings.subtitleLines === 2 ? ' active' : ''}" data-lines="2">2</button>
+          </div>
+        </div>
+        <div class="settings-col">
+          <div class="settings-row-hd">
+            <span class="settings-label">Subtitle size</span>
+            <span class="settings-val" id="sizeVal">${overlaySettings.subtitleSize}%</span>
+          </div>
+          <input type="range" class="settings-slider" id="sizeSlider" min="50" max="150" value="${overlaySettings.subtitleSize}">
+        </div>
+        <div class="settings-col">
+          <div class="settings-row-hd">
+            <span class="settings-label">Background opacity</span>
+            <span class="settings-val" id="opacityVal">${overlaySettings.bgOpacity}%</span>
+          </div>
+          <input type="range" class="settings-slider" id="opacitySlider" min="0" max="100" value="${overlaySettings.bgOpacity}">
+        </div>
       </div>
     </div>
   `;
@@ -352,9 +384,9 @@ export function renderPlayer(params, root) {
   subtitleList.className = 'subtitle-list';
   sheetContent.appendChild(subtitleList);
 
-  // 가로 모드: 영상 위에 현재 자막 오버레이 생성
+  // 영상 위 현재 자막 오버레이 생성 (세로/가로 공통)
   landscapeSubtitleOverlay = document.createElement('div');
-  landscapeSubtitleOverlay.className = 'landscape-subtitle-overlay';
+  landscapeSubtitleOverlay.className = 'subtitle-overlay';
   root.querySelector('#videoArea').appendChild(landscapeSubtitleOverlay);
 
   if (subtitlesReady) {
@@ -379,6 +411,7 @@ export function renderPlayer(params, root) {
   bindLang(root);
   bindPanelToggle(root);
   bindOrientationChange();
+  bindSettings(root);
   root.querySelector('#exitFab').addEventListener('click', () => navigate('home'));
   updateScrollToTopLabel();
 
@@ -468,6 +501,136 @@ function bindLang(root) {
 }
 function closeLangPanel() { if (langPanel) langPanel.classList.remove('open'); }
 
+/* ── 영상 위 자막 오버레이 빌드 (세로/가로 공통) ── */
+function updateOverlay(cur) {
+  if (!landscapeSubtitleOverlay) return;
+  landscapeSubtitleOverlay.innerHTML = '';
+
+  const alpha = (overlaySettings.bgOpacity / 100).toFixed(2);
+  landscapeSubtitleOverlay.style.background = `rgba(0,0,0,${alpha})`;
+
+  if (!cur) { landscapeSubtitleOverlay.style.opacity = '0'; return; }
+  landscapeSubtitleOverlay.style.opacity = '1';
+
+  // 2줄 모드: 바로 이전 자막도 표시
+  const items = [];
+  if (overlaySettings.subtitleLines === 2) {
+    const idx = SUBTITLES.findIndex((s) => s.start === cur.start);
+    if (idx > 0) items.push(SUBTITLES[idx - 1]);
+  }
+  items.push(cur);
+
+  const fontSize = Math.round(14 * overlaySettings.subtitleSize / 100);
+
+  items.forEach((item, i) => {
+    const text = item[currentLang] || item.en || '';
+    const speaker = item.speaker || '';
+    const color = SPEAKER_COLORS[speaker] || '#888888';
+    const initials = SPEAKER_INITIALS[speaker] || speaker.slice(0, 2).toUpperCase();
+
+    const row = document.createElement('div');
+    row.className = i > 0 ? 'overlay-row overlay-row-sep' : 'overlay-row';
+
+    if (overlaySettings.showSpeaker && speaker) {
+      const av = document.createElement('div');
+      av.className = 'overlay-avatar';
+      av.style.cssText = `background:${color}22;border:1.5px solid ${color}66;color:${color}`;
+      const imgSrc = SPEAKER_IMAGES[speaker];
+      if (imgSrc) {
+        const img = document.createElement('img');
+        img.src = imgSrc; img.alt = speaker;
+        img.onerror = () => { img.remove(); av.textContent = initials; };
+        av.appendChild(img);
+      } else { av.textContent = initials; }
+      row.appendChild(av);
+    }
+
+    const body = document.createElement('div');
+    body.className = 'overlay-body';
+    if (overlaySettings.showSpeaker && speaker) {
+      const nm = document.createElement('div');
+      nm.className = 'overlay-name';
+      nm.style.color = color;
+      nm.textContent = speaker;
+      body.appendChild(nm);
+    }
+    const tx = document.createElement('div');
+    tx.className = 'overlay-text-main';
+    tx.style.fontSize = fontSize + 'px';
+    tx.textContent = text;
+    body.appendChild(tx);
+
+    row.appendChild(body);
+    landscapeSubtitleOverlay.appendChild(row);
+  });
+}
+
+/** 설정 변경 시 오버레이를 강제 갱신한다. */
+function refreshOverlay() {
+  if (!landscapeSubtitleOverlay || !subtitlesReady || !controller) return;
+  const time = controller.getTime();
+  const cur = SUBTITLES.find((s) => time >= s.start && time < s.end) || null;
+  updateOverlay(cur);
+}
+
+/* ── 설정 패널 컨트롤 바인딩 ── */
+function bindSettings(root) {
+  const speakerToggle = root.querySelector('#speakerToggle');
+  const transcriptToggle = root.querySelector('#transcriptToggle');
+  const segBtns = root.querySelectorAll('.seg-btn[data-lines]');
+  const sizeSlider = root.querySelector('#sizeSlider');
+  const sizeVal = root.querySelector('#sizeVal');
+  const opacitySlider = root.querySelector('#opacitySlider');
+  const opacityVal = root.querySelector('#opacityVal');
+  const playerView = root.querySelector('.player-view');
+
+  if (!speakerToggle) return;
+  updateSliderTrack(sizeSlider);
+  updateSliderTrack(opacitySlider);
+
+  speakerToggle.addEventListener('click', () => {
+    overlaySettings.showSpeaker = !overlaySettings.showSpeaker;
+    speakerToggle.classList.toggle('on', overlaySettings.showSpeaker);
+    refreshOverlay();
+  });
+
+  transcriptToggle.addEventListener('click', () => {
+    overlaySettings.showTranscript = !overlaySettings.showTranscript;
+    transcriptToggle.classList.toggle('on', overlaySettings.showTranscript);
+    sheet.classList.toggle('transcript-hidden', !overlaySettings.showTranscript);
+    playerView?.classList.toggle('transcript-off', !overlaySettings.showTranscript);
+  });
+
+  segBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      overlaySettings.subtitleLines = Number(btn.dataset.lines);
+      segBtns.forEach((b) => b.classList.toggle('active', b === btn));
+      refreshOverlay();
+    });
+  });
+
+  sizeSlider.addEventListener('input', () => {
+    overlaySettings.subtitleSize = Number(sizeSlider.value);
+    sizeVal.textContent = overlaySettings.subtitleSize + '%';
+    updateSliderTrack(sizeSlider);
+    refreshOverlay();
+  });
+
+  opacitySlider.addEventListener('input', () => {
+    overlaySettings.bgOpacity = Number(opacitySlider.value);
+    opacityVal.textContent = overlaySettings.bgOpacity + '%';
+    updateSliderTrack(opacitySlider);
+    refreshOverlay();
+  });
+}
+
+/** range 슬라이더의 채워진 트랙 색상을 CSS 변수로 업데이트한다. */
+function updateSliderTrack(slider) {
+  if (!slider) return;
+  const pct = (((+slider.value) - (+slider.min)) / ((+slider.max) - (+slider.min)) * 100).toFixed(1) + '%';
+  slider.style.setProperty('--pct', pct);
+}
+
 /* ── 가로 모드: 자막 패널 열기/닫기 토글 ── */
 function bindPanelToggle(root) {
   const btn = root.querySelector('#panelToggleBtn');
@@ -512,4 +675,5 @@ function cleanup() {
   controller = null;
   landscapeSubtitleOverlay = null;
   panelCollapsed = false;
+  overlaySettings = { showSpeaker: true, showTranscript: true, subtitleLines: 2, subtitleSize: 80, bgOpacity: 65 };
 }

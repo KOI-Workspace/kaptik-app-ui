@@ -168,7 +168,7 @@
 /* 언어 팝업 */
 .lang-panel {
   position: absolute; right: 14px; bottom: calc(16px + 104px + env(safe-area-inset-bottom));
-  width: 220px; background: rgba(16, 16, 16, 0.97);
+  width: 250px; background: rgba(16, 16, 16, 0.97);
   border: 1px solid var(--border); border-radius: 16px;
   padding: 14px; backdrop-filter: blur(18px); z-index: 400;
   display: flex; flex-direction: column; gap: 8px;
@@ -197,32 +197,114 @@
 }
 .lang-select option { background: #1a1a1a; color: var(--text-1); }
 
-/* ── 가로 모드: 영상 위 현재 자막 오버레이 ── */
-.landscape-subtitle-overlay {
-  display: none;
+/* ── 영상 위 현재 자막 오버레이 (세로/가로 공통) ── */
+.subtitle-overlay {
   position: absolute;
-  bottom: 16%;
+  bottom: 14%;
   left: 50%;
   transform: translateX(-50%);
-  max-width: 82%;
-  text-align: center;
-  padding: 6px 14px;
+  max-width: 86%;
+  padding: 8px 14px 10px;
   background: rgba(0, 0, 0, 0.62);
-  border-radius: 8px;
-  font-size: 15px;
-  font-weight: 500;
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.96);
+  border-radius: 10px;
   pointer-events: none;
   z-index: 150;
   backdrop-filter: blur(3px);
-  word-break: break-word;
   transition: opacity 0.2s ease;
+  min-width: 80px;
 }
-.landscape-subtitle-overlay:empty { opacity: 0; }
+
+/* 오버레이 내부: 발화자 행 */
+.overlay-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.overlay-row.overlay-row-sep {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+.overlay-avatar {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px; font-weight: 700;
+  overflow: hidden; margin-top: 2px;
+}
+.overlay-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.overlay-body { flex: 1; min-width: 0; }
+.overlay-name { font-size: 11px; font-weight: 600; margin-bottom: 2px; }
+.overlay-text-main {
+  font-weight: 400;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.96);
+  word-break: break-word;
+}
 
 /* 패널 토글 탭 — 세로 모드에서 숨김 */
 .panel-toggle-btn { display: none; }
+
+/* ── 설정 패널 공통 ── */
+.lang-panel-header-divider { margin-bottom: 2px; }
+.lang-select-sm { width: auto; max-width: 110px; font-size: 12px; padding: 5px 20px 5px 8px; }
+.settings-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 32px; }
+.settings-row-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.settings-label { font-size: 13px; font-weight: 500; color: var(--text-1); flex-shrink: 0; }
+.settings-col { display: flex; flex-direction: column; }
+.settings-val { font-size: 12px; font-weight: 600; color: var(--brand); }
+
+/* iOS 스타일 토글 */
+.toggle-pill {
+  width: 40px; height: 24px; border-radius: 12px;
+  background: rgba(255, 255, 255, 0.18); border: none;
+  position: relative; cursor: pointer; flex-shrink: 0;
+  transition: background 0.2s ease;
+}
+.toggle-pill::after {
+  content: ''; position: absolute;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: #fff; top: 2px; left: 2px;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+.toggle-pill.on { background: var(--brand); }
+.toggle-pill.on::after { transform: translateX(16px); }
+
+/* 세그먼트 컨트롤 */
+.seg-ctrl {
+  display: flex; border: 1px solid var(--border);
+  border-radius: 8px; overflow: hidden; flex-shrink: 0;
+}
+.seg-btn {
+  padding: 4px 14px; font-size: 12px; font-weight: 500;
+  background: none; border: none; color: var(--text-3);
+  cursor: pointer; font-family: var(--font);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.seg-btn + .seg-btn { border-left: 1px solid var(--border); }
+.seg-btn.active { background: var(--brand); color: #fff; }
+
+/* 슬라이더 */
+.settings-slider {
+  width: 100%; height: 4px; border-radius: 2px;
+  appearance: none; -webkit-appearance: none; outline: none;
+  background: linear-gradient(to right, var(--brand) var(--pct, 30%), rgba(255, 255, 255, 0.18) var(--pct, 30%));
+  cursor: pointer;
+}
+.settings-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--brand); cursor: pointer;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+.settings-slider::-moz-range-thumb {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--brand); cursor: pointer;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+}
 
 /* ── 가로 모드 레이아웃 ── */
 @media (orientation: landscape) {
@@ -249,8 +331,8 @@
     aspect-ratio: unset;
   }
 
-  /* 자막 오버레이 활성화 */
-  .landscape-subtitle-overlay { display: block; }
+  /* 세로에서의 오버레이 위치 재조정 (가로에서 더 낮게) */
+  .subtitle-overlay { bottom: 12%; }
 
   /* 시트 → 우측 고정 패널 */
   .sheet {
@@ -318,16 +400,35 @@
   .subtitle-item { padding: 6px 0; }
   .subtitle-list { padding: 4px 10px 40px; }
 
-  /* FAB 그룹 — 패널 왼쪽에 위치 */
+  /* FAB 그룹 — 상단으로 이동 */
   .fab-group {
     right: calc(240px + 16px);
+    top: 12px;
+    bottom: auto;
     transition: right 0.3s var(--ease);
   }
 
-  /* 언어 팝업 — 패널 왼쪽, FAB 위에 위치 */
+  /* 설정 패널 — FAB 아래로 열림, 스크롤 가능 */
   .lang-panel {
     right: calc(240px + 14px);
-    bottom: calc(16px + 104px + env(safe-area-inset-bottom));
+    top: calc(12px + 104px);
+    bottom: auto;
+    width: 260px;
+    transform-origin: top right;
+    transform: translateY(-6px) scale(0.96);
+    max-height: calc(100vh - 140px);
+    overflow-y: auto;
+    scrollbar-width: none;
+    padding: 10px;
+    gap: 8px;
     transition: right 0.3s var(--ease);
   }
+  .lang-panel.open { transform: translateY(0) scale(1); }
+  .lang-panel::-webkit-scrollbar { display: none; }
+  .lang-panel-title, .lang-panel-meta, .lang-panel-header-divider { display: none; }
+
+  /* Transcript 꺼짐: 패널 숨김, FAB/설정 위치 조정 */
+  .sheet.transcript-hidden { display: none; }
+  .player-view.transcript-off .fab-group { right: 16px; }
+  .player-view.transcript-off .lang-panel { right: 14px; }
 }
