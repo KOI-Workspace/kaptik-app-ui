@@ -21,7 +21,8 @@
       "Bash(curl -s -o /dev/null -w \"index.html %{http_code}\\\\n\" http://127.0.0.1:8000/index.html)",
       "Bash(curl *)",
       "Bash(echo \"exit:$?\")",
-      "Bash(pkill -f \"http.server 8000\")"
+      "Bash(pkill -f \"http.server 8000\")",
+      "Bash(lsof -nP -iTCP:8000 -sTCP:LISTEN)"
     ]
   }
 }
