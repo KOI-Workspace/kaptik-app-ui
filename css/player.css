@@ -256,8 +256,8 @@
   .sheet {
     position: relative !important;
     top: auto !important;
-    flex: 0 0 200px;
-    width: 200px;
+    flex: 0 0 240px;
+    width: 240px;
     height: 100%;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
@@ -271,8 +271,8 @@
 
   /* 패널 접힘 상태 */
   .sheet.panel-collapsed {
-    flex-basis: 44px;
-    width: 44px;
+    flex-basis: 40px;
+    width: 40px;
     opacity: 0.45;
   }
 
@@ -310,24 +310,24 @@
   .panel-toggle-btn svg { transition: transform 0.3s var(--ease); }
   .sheet.panel-collapsed .panel-toggle-btn svg { transform: rotate(180deg); }
 
-  /* 자막 텍스트 크기 축소 — 200px 패널에 맞게 */
-  .subtitle-text { font-size: 13px; }
+  /* 자막 텍스트 크기 축소 — 240px 패널에 맞게 */
+  .subtitle-text { font-size: 12px; line-height: 1.5; }
   .subtitle-name { font-size: 11px; }
   .subtitle-time { font-size: 10px; }
-  .subtitle-avatar { width: 28px; height: 28px; font-size: 8px; }
-  .subtitle-item { padding: 7px 0; }
-  .subtitle-list { padding: 4px 12px 40px; }
+  .subtitle-avatar { width: 26px; height: 26px; font-size: 8px; }
+  .subtitle-item { padding: 6px 0; }
+  .subtitle-list { padding: 4px 10px 40px; }
 
   /* FAB 그룹 — 패널 왼쪽에 위치 */
   .fab-group {
-    right: calc(200px + 16px);
+    right: calc(240px + 16px);
     transition: right 0.3s var(--ease);
   }
 
-  /* 언어 팝업 — 패널 왼쪽에 위치 */
+  /* 언어 팝업 — 패널 왼쪽, FAB 위에 위치 */
   .lang-panel {
-    right: calc(200px + 14px);
-    bottom: 14px;
+    right: calc(240px + 14px);
+    bottom: calc(16px + 104px + env(safe-area-inset-bottom));
     transition: right 0.3s var(--ease);
   }
 }
