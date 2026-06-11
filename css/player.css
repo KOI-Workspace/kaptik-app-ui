@@ -310,6 +310,14 @@
   .panel-toggle-btn svg { transition: transform 0.3s var(--ease); }
   .sheet.panel-collapsed .panel-toggle-btn svg { transform: rotate(180deg); }
 
+  /* 자막 텍스트 크기 축소 — 200px 패널에 맞게 */
+  .subtitle-text { font-size: 13px; }
+  .subtitle-name { font-size: 11px; }
+  .subtitle-time { font-size: 10px; }
+  .subtitle-avatar { width: 28px; height: 28px; font-size: 8px; }
+  .subtitle-item { padding: 7px 0; }
+  .subtitle-list { padding: 4px 12px 40px; }
+
   /* FAB 그룹 — 패널 왼쪽에 위치 */
   .fab-group {
     right: calc(200px + 16px);
