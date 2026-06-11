@@ -59,7 +59,7 @@ export function signUp({ email = '', password = '', confirm = '', name = '' } = 
   const account = { email, password, name: name.trim() || nameFromEmail(email), provider: 'email' };
   saveAccounts([...loadAccounts(), account]);
   startSession({ name: account.name, email: account.email, provider: 'email' });
-  return { ok: true };
+  return { ok: true, isNew: true };
 }
 
 /**
@@ -76,22 +76,23 @@ export function signIn({ email = '', password = '' } = {}) {
   if (account.password !== password) return fail('pw', 'err.pwWrong');
 
   startSession({ name: account.name, email: account.email, provider: 'email' });
-  return { ok: true };
+  return { ok: true, isNew: false };
 }
 
 /**
- * Google 로그인 — 데모용 단일 계정. 없으면 만들고, 있으면 그대로 로그인.
+ * Google 로그인 — 데모용 단일 계정. 없으면 만들고(신규), 있으면 그대로 로그인(기존).
  * 항상 성공한다.
  */
 export function signInWithGoogle() {
   const email = 'user@gmail.com';
   let account = findAccount(email);
+  const isNew = !account;
   if (!account) {
     account = { email, password: null, name: 'Google 사용자', provider: 'google' };
     saveAccounts([...loadAccounts(), account]);
   }
   startSession({ name: account.name, email: account.email, provider: 'google' });
-  return { ok: true };
+  return { ok: true, isNew };
 }
 
 /**

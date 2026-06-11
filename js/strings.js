@@ -194,4 +194,22 @@ export const STRINGS = {
   'toast.canceled':       { ko: '구독이 해지됐어요', en: 'Subscription canceled' },
   'common.close':         { ko: '닫기', en: 'Close' },
   'common.keep':          { ko: '계속 이용', en: 'Keep it' },
+
+  /* ── 온보딩 ── */
+  'onb.auth.title':        { ko: '시작하기', en: 'Get started' },
+  'onb.auth.sub':          { ko: '로그인하고 좋아하는 아티스트의 라이브를 내 언어로 즐겨보세요.', en: 'Log in and enjoy your favorite artist’s lives in your language.' },
+  'onb.personalize.title': { ko: '거의 다 됐어요', en: 'Almost there' },
+  'onb.personalize.sub':   { ko: '언어와 아티스트만 고르면 끝이에요.', en: 'Just pick your language and artists.' },
+  'onb.lang.label':        { ko: '자막 언어', en: 'Subtitle language' },
+  'onb.artists.label':     { ko: '팔로우할 아티스트', en: 'Artists to follow' },
+  'onb.artists.hint':      { ko: '좋아하는 아티스트를 골라주세요 (여러 명 가능)', en: 'Pick your favorites (you can choose several)' },
+  'onb.next':              { ko: '다음', en: 'Next' },
+  'onb.skip':              { ko: '나중에', en: 'Later' },
+  'onb.start':             { ko: 'Kaptik 시작하기', en: 'Start Kaptik' },
+  'onb.plan.title':        { ko: '요금제를 골라보세요', en: 'Choose your plan' },
+  'onb.plan.sub':          { ko: '나중에 언제든 바꿀 수 있어요.', en: 'You can change it anytime.' },
+  'onb.plan.freeStart':    { ko: '먼저 무료로 둘러보기', en: 'Browse free for now' },
+  'onb.upsell.title':      { ko: '더 많은 영상을 자막과 함께', en: 'More videos, with subtitles' },
+  'onb.upsell.sub':        { ko: '업그레이드하고 모든 라이브와 영상을 내 언어로 즐겨보세요.', en: 'Upgrade to enjoy every live and video in your language.' },
+  'toast.welcome':         { ko: 'Kaptik에 오신 걸 환영해요!', en: 'Welcome to Kaptik!' },
 };
