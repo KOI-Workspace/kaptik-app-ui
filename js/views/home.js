@@ -83,7 +83,7 @@ export function renderHome(_params, root) {
 
   root.innerHTML = `
     <div class="view">
-      ${headerHTML({ showSearch: false, hasNotif: true })}
+      ${headerHTML()}
       <div class="page-content">
         <p class="section-label">${t('home.myArtists')}</p>
         <div class="artists-rail">

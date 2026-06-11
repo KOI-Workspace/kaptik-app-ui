@@ -27,7 +27,7 @@ export function renderMy(_params, root) {
 
   root.innerHTML = `
     <div class="view">
-      ${headerHTML({ showSearch: false, hasNotif: true })}
+      ${headerHTML()}
       <div class="page-content">
         ${showUpgradeBanner ? `
         <button class="upgrade-banner" id="upgradeBanner">

@@ -39,7 +39,7 @@ function startTranslation(platform) {
 export function renderTranslate(_params, root) {
   root.innerHTML = `
     <div class="view">
-      ${headerHTML({ showSearch: false, hasNotif: true })}
+      ${headerHTML()}
       <div class="page-content">
         <h1 class="translate-hero">${t('translate.heroHtml')}</h1>
 
