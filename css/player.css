@@ -65,7 +65,7 @@
   color: var(--text-1);
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
-.subtitle-status.ready {
+.subtitle-status.leaving {
   opacity: 0;
   transform: translateY(-6px);
 }
@@ -83,7 +83,7 @@
 }
 .subtitle-status-indicator span:nth-child(2) { animation-delay: 0.15s; }
 .subtitle-status-indicator span:nth-child(3) { animation-delay: 0.3s; }
-.subtitle-status.ready .subtitle-status-indicator span {
+.subtitle-status.complete .subtitle-status-indicator span {
   animation: none;
   height: 3px;
 }

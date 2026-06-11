@@ -231,7 +231,7 @@ function rerenderAll() {
 function finishSubtitlePreparation(statusEl) {
   if (!controller || !statusEl) return;
   subtitlesReady = true;
-  statusEl.classList.add('ready');
+  statusEl.classList.add('complete');
   statusEl.querySelector('.subtitle-status-title').textContent = t('player.subtitleReady');
   statusEl.querySelector('.subtitle-status-desc').textContent = t('player.subtitleReadyDesc');
 
@@ -243,7 +243,8 @@ function finishSubtitlePreparation(statusEl) {
     prependSubtitle(currentSubtitle);
   }
 
-  setTimeout(() => statusEl.remove(), 700);
+  setTimeout(() => statusEl.classList.add('leaving'), 600);
+  setTimeout(() => statusEl.remove(), 950);
 }
 
 /* ── 문화맥락 해설 ── */
