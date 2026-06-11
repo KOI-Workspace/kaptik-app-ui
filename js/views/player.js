@@ -156,11 +156,9 @@ function createSubtitleEl(item) {
 /* ── 자막 클릭 → seek ── */
 function seekToSubtitle(item, rowEl) {
   if (controller) controller.seekTo(item.start);
-  rebuildHistoryUpTo(item.start + 0.01);
-  const fresh = subtitleList.querySelector('.subtitle-item:last-child .subtitle-row') || rowEl;
-  fresh.classList.add('seeking');
-  setTimeout(() => fresh.classList.remove('seeking'), 600);
-  sheetContent.scrollTo({ top: 0, behavior: 'smooth' });
+  lastSubtitleStart = item.start;
+  rowEl.classList.add('seeking');
+  setTimeout(() => rowEl.classList.remove('seeking'), 600);
 }
 
 /* ── 재생 위치까지 히스토리 재구성 ── */
@@ -175,7 +173,11 @@ function updateSubtitle(t) {
   const cur = SUBTITLES.find((s) => t >= s.start && t < s.end);
   if (!cur) return;
   if (cur.start === lastSubtitleStart) return;
-  if (cur.start < lastSubtitleStart) { rebuildHistoryUpTo(t); return; }
+  // 과거 시점으로 이동해도 사용자가 보고 있던 자막 목록과 스크롤 위치는 유지한다.
+  if (cur.start < lastSubtitleStart || history.some((item) => item.start === cur.start)) {
+    lastSubtitleStart = cur.start;
+    return;
+  }
   lastSubtitleStart = cur.start;
   history.push(cur);
   if (isScrolling && isUserScrolled) pendingItems.push(cur);
