@@ -5,7 +5,7 @@
  * - 토스트 알림
  */
 import {
-  setState, setPlan, getState,
+  setState, setPlan, setAgreement, getState,
   isFollowing, getFollow, followArtist, unfollowArtist, setFollowNotify,
 } from './state.js';
 import { quickAuth, signInWithGoogle } from './auth.js';
@@ -14,6 +14,12 @@ import { ARTIST_CATALOG, getArtist } from './data.js';
 
 const modalRoot = () => document.getElementById('modal-root');
 const toastRoot = () => document.getElementById('toast-root');
+
+// 실제 Notion 문서가 확정되면 아래 URL만 교체한다.
+const LEGAL_URLS = {
+  tos: 'https://www.notion.so/',
+  privacy: 'https://www.notion.so/',
+};
 
 /** 아티스트 아바타 마크업 — 로고 이미지가 있으면 이미지, 없으면 이니셜 */
 function artistAvatar(a, size = 44) {
@@ -375,23 +381,67 @@ export function openBillingModal({ onChange } = {}) {
   modalRoot().appendChild(scrim);
 }
 
-/* ─────────────────────────────────────────
-   약관 / 개인정보 문서 모달
-   key: 'tos' | 'privacy' → legal.<key>.title / legal.<key>.body
-   ───────────────────────────────────────── */
+/** 약관 또는 개인정보 처리방침 Notion 문서를 새 탭에서 연다. */
 export function openLegalDoc(key) {
+  const url = LEGAL_URLS[key];
+  if (!url) return;
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
+
+/* ─────────────────────────────────────────
+   약관 및 동의 관리
+   - 약관/개인정보: Notion 문서로 이동
+   - 마케팅 정보: 이 화면 안에서 수신 여부 변경
+   ───────────────────────────────────────── */
+export function openConsentSettings({ onChange } = {}) {
   const scrim = document.createElement('div');
   scrim.className = 'scrim';
-  scrim.innerHTML = `
-    <div class="modal-card sheet-modal" style="position:relative;">
-      <button class="modal-close-x" aria-label="${t('aria.close')}">✕</button>
-      <div class="modal-grip"></div>
-      <div class="modal-title">${t(`legal.${key}.title`)}</div>
-      <div class="legal-body">${t(`legal.${key}.body`)}</div>
-    </div>
-  `;
-  scrim.querySelector('.modal-close-x').addEventListener('click', () => closeScrim(scrim));
+
+  const render = () => {
+    const marketing = getState().agreements.marketing;
+    scrim.innerHTML = `
+      <div class="modal-card sheet-modal" style="position:relative;">
+        <button class="modal-close-x" aria-label="${t('aria.close')}">✕</button>
+        <div class="modal-grip"></div>
+        <div class="modal-title">${t('consent.title')}</div>
+        <div class="modal-desc">${t('consent.desc')}</div>
+
+        <div class="settings-group consent-settings">
+          <button class="settings-row clickable consent-doc-row" data-doc="tos">
+            <span class="row-label">${t('my.row.tos')}</span>
+            <span class="row-value">${t('consent.notion')} ↗</span>
+          </button>
+          <button class="settings-row clickable consent-doc-row" data-doc="privacy">
+            <span class="row-label">${t('my.row.privacy')}</span>
+            <span class="row-value">${t('consent.notion')} ↗</span>
+          </button>
+          <div class="settings-row">
+            <span class="row-label">
+              ${t('my.row.marketing')}
+              <small class="consent-optional">${t('agree.optional')}</small>
+            </span>
+            <button class="toggle ${marketing ? 'on' : ''}" id="consentMarketing" aria-label="${t('my.row.marketing')}"></button>
+          </div>
+        </div>
+        <p class="consent-help">${t('consent.marketingHelp')}</p>
+      </div>
+    `;
+
+    scrim.querySelectorAll('[data-doc]').forEach((row) => {
+      row.addEventListener('click', () => openLegalDoc(row.dataset.doc));
+    });
+    scrim.querySelector('#consentMarketing').addEventListener('click', () => {
+      const next = !getState().agreements.marketing;
+      setAgreement('marketing', next);
+      toast({ title: t(next ? 'toast.marketingOn' : 'toast.marketingOff'), type: 'check' });
+      render();
+      if (onChange) onChange();
+    });
+    scrim.querySelector('.modal-close-x').addEventListener('click', () => closeScrim(scrim));
+  };
+
   scrim.addEventListener('click', (e) => { if (e.target === scrim) closeScrim(scrim); });
+  render();
   modalRoot().appendChild(scrim);
 }
 

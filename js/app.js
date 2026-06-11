@@ -8,6 +8,7 @@ import { renderMy } from './views/my.js';
 import { renderPlayer } from './views/player.js';
 import { renderLogin } from './views/login.js';
 import { renderOnboarding } from './views/onboarding.js';
+import { renderSettings } from './views/settings.js';
 import { getState } from './state.js';
 import { t } from './i18n.js';
 
@@ -47,6 +48,7 @@ registerRoute('my', renderMy);
 registerRoute('player', renderPlayer);
 registerRoute('login', renderLogin);
 registerRoute('onboarding', renderOnboarding);
+registerRoute('settings', renderSettings);
 
 renderNav();
 

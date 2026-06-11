@@ -769,16 +769,36 @@
 .onb-progress span { width: 7px; height: 7px; border-radius: 50%; background: var(--border); }
 .onb-progress span.on { background: var(--brand); width: 20px; border-radius: var(--r-pill); }
 
-/* 5초 후 활성화되는 닫기 버튼 */
+/* 요금제 화면 닫기 버튼 */
 .onb-close {
   position: absolute; top: calc(14px + env(safe-area-inset-top)); right: 16px; z-index: 5;
   width: 32px; height: 32px; border-radius: 50%; border: none;
-  background: var(--surface-el); color: var(--text-3);
-  font-size: 14px; font-weight: 700; cursor: default;
+  background: var(--surface-el); color: var(--text-1);
+  font-size: 14px; font-weight: 700; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
 }
-.onb-close[disabled] { opacity: 0.55; }
-.onb-close.ready { color: var(--text-1); cursor: pointer; }
+.onb-close:active { transform: scale(0.94); }
+
+/* 회원가입 이메일 인증 UI — 실제 발송/검증은 백엔드 연결 예정 */
+.verify-input-row { display: flex; align-items: stretch; gap: 8px; }
+.verify-input-row input { min-width: 0; }
+.verify-send-btn {
+  flex-shrink: 0; min-width: 84px; padding: 0 12px;
+  border: 1px solid rgba(131, 83, 235, 0.55); border-radius: var(--r-md);
+  background: var(--brand-soft); color: #C4AAFF;
+  font-size: 12px; font-weight: 800; font-family: var(--font); cursor: pointer;
+}
+.verify-send-btn:active { background: rgba(131, 83, 235, 0.28); }
+.verify-send-btn:disabled { border-color: var(--border); background: var(--surface-el); color: var(--text-2); cursor: default; }
+.verification-field { display: none; }
+.verification-field.visible { display: block; animation: fadeUp 180ms var(--ease); }
+.verification-field.verified .field-help { color: #9ED8B3; }
+.field-help { margin: 6px 2px 0; font-size: 12px; line-height: 1.4; color: var(--text-3); }
+
+.plan-select-hint {
+  margin: -4px 8px 0; text-align: center;
+  font-size: 12px; line-height: 1.5; color: var(--text-3);
+}
 
 /* 언어 칩 */
 .lang-chips { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -854,4 +874,43 @@
   margin-top: 8px; overflow-y: auto; max-height: 64vh;
   font-size: 13.5px; line-height: 1.7; color: var(--text-2); font-weight: 500;
   white-space: pre-line;
+}
+
+/* 약관 및 동의 관리 */
+.consent-settings { margin: 2px 0 12px; }
+.consent-doc-row {
+  width: 100%; color: var(--text-1); text-align: left;
+  background: transparent; border-left: none; border-right: none; border-top: none;
+  font-family: var(--font);
+}
+.consent-optional {
+  display: block; margin-top: 3px;
+  color: var(--text-3); font-size: 11px; font-weight: 600;
+}
+.consent-help {
+  padding: 0 4px; color: var(--text-3);
+  font-size: 12px; font-weight: 500; line-height: 1.5;
+}
+
+/* 독립 설정 페이지 */
+.settings-page { min-height: 100dvh; background: var(--page); }
+.subpage-header {
+  position: sticky; top: 0; z-index: 20;
+  height: calc(60px + env(safe-area-inset-top));
+  padding: env(safe-area-inset-top) 16px 0;
+  display: grid; grid-template-columns: 44px 1fr 44px; align-items: center;
+  background: var(--page); border-bottom: 1px solid var(--border-sub);
+}
+.subpage-header h1 { text-align: center; font-size: 18px; font-weight: 800; }
+.subpage-back {
+  width: 40px; height: 40px; border: none; border-radius: 50%;
+  background: transparent; color: var(--text-1); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.subpage-back:active { background: rgba(255, 255, 255, 0.07); }
+.settings-page-content { padding-top: 26px; padding-bottom: calc(32px + env(safe-area-inset-bottom)); }
+.notification-setting-row { min-height: 82px; }
+.setting-row-help {
+  display: block; margin-top: 5px; max-width: 260px;
+  color: var(--text-3); font-size: 12px; font-weight: 500; line-height: 1.45;
 }

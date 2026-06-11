@@ -15,6 +15,8 @@ const DEFAULTS = {
   follows: DEFAULT_FOLLOWS.map((f) => ({ ...f })),
   // 약관/동의 — tos·privacy는 필수(가입 시 true), marketing은 선택
   agreements: { tos: false, privacy: false, marketing: false },
+  // 알림 종류별 설정 — 실제 푸시 연결 전 프로토타입 상태
+  notifications: { live: true, subtitle: true, product: false },
   // 요금제 — 'free' | 'basic' | 'pro' (단일 진실 소스)
   plan: 'free',
   // Pro 전용 게이트용 파생 플래그 (plan === 'pro' 와 항상 동기화)

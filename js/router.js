@@ -6,7 +6,7 @@
  */
 
 const routes = new Map();        // name -> { render, fullscreen }
-const FULLSCREEN = new Set(['player', 'login', 'onboarding']);
+const FULLSCREEN = new Set(['player', 'login', 'onboarding', 'settings']);
 
 let currentRoute = null;
 let pendingParams = null;        // navigate 시 전달한 파라미터(메모리)

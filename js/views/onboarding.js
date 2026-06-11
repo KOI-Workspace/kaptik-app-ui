@@ -22,6 +22,11 @@ const GOOGLE_SVG = `<svg width="18" height="18" viewBox="0 0 18 18"><path fill="
 const CHECK = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
 
 export function renderOnboarding(_params, root) {
+  // 로그인 전 인증 화면은 항상 영어로 시작하고, 가입 후 개인화 단계에서 언어를 선택한다.
+  if (!getState().isLoggedIn && getState().uiLang !== 'en') {
+    setState({ uiLang: 'en', defaultLang: 'en' });
+  }
+
   // 단계: 'auth' → 'personalize' → 'plan'
   let step = 'auth';
   // auth 내부 서브스텝: 'main'(Google+Email 버튼) | 'email'(이메일 폼)
@@ -29,13 +34,11 @@ export function renderOnboarding(_params, root) {
   let authMode = 'signin';   // email 서브스텝 내 모드
   let upsell = false;
   let chosenPlan = 'pro';
-  let countdownTimer = null;
   const agree = { tos: false, privacy: false, marketing: false };
-
-  const clearCountdown = () => { if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; } };
+  let verificationSent = false;
+  let emailVerified = false;
 
   const finish = () => {
-    clearCountdown();
     setState({ onboardingDone: true });
     toast({ title: t('toast.welcome'), type: 'check' });
     navigate('home');
@@ -109,9 +112,21 @@ export function renderOnboarding(_params, root) {
             <p class="field-error"></p>
           </div>` : ''}
           <div class="field" data-field="email">
-            <input type="email" id="email" placeholder="${t('login.ph.email')}" autocomplete="email" inputmode="email" />
+            <div class="${isSignup ? 'verify-input-row' : ''}">
+              <input type="email" id="email" placeholder="${t('login.ph.email')}" autocomplete="email" inputmode="email" />
+              ${isSignup ? `<button type="button" class="verify-send-btn" id="sendCodeBtn">${t('emailVerify.send')}</button>` : ''}
+            </div>
             <p class="field-error"></p>
           </div>
+          ${isSignup ? `
+          <div class="field verification-field ${verificationSent ? 'visible' : ''}" data-field="verification">
+            <div class="verify-input-row">
+              <input type="text" id="verificationCode" placeholder="${t('emailVerify.placeholder')}" inputmode="numeric" maxlength="4" autocomplete="one-time-code" />
+              <button type="button" class="verify-send-btn" id="verifyCodeBtn">${t('emailVerify.confirm')}</button>
+            </div>
+            <p class="field-help">${t('emailVerify.help')}</p>
+            <p class="field-error"></p>
+          </div>` : ''}
           <div class="field" data-field="pw">
             <input type="password" id="pw" placeholder="${t('login.ph.pw')}" autocomplete="${isSignup ? 'new-password' : 'current-password'}" />
             <p class="field-error"></p>
@@ -154,13 +169,59 @@ export function renderOnboarding(_params, root) {
       renderAuth();
     });
     root.querySelectorAll('.auth-seg .seg-btn').forEach((btn) => {
-      btn.addEventListener('click', () => { authMode = btn.dataset.mode; renderAuth(); });
+      btn.addEventListener('click', () => {
+        authMode = btn.dataset.mode;
+        verificationSent = false;
+        emailVerified = false;
+        renderAuth();
+      });
     });
     root.querySelectorAll('.field input').forEach((inp) => {
       inp.addEventListener('input', () => inp.closest('.field')?.classList.remove('invalid'));
     });
 
     if (isSignup) {
+      const sendCodeBtn = root.querySelector('#sendCodeBtn');
+      const verificationField = root.querySelector('.verification-field');
+      const verificationCode = root.querySelector('#verificationCode');
+      const verifyCodeBtn = root.querySelector('#verifyCodeBtn');
+
+      root.querySelector('#email').addEventListener('input', () => {
+        emailVerified = false;
+        sendCodeBtn.textContent = verificationSent ? t('emailVerify.resend') : t('emailVerify.send');
+      });
+
+      sendCodeBtn.addEventListener('click', () => {
+        const email = root.querySelector('#email').value.trim();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          showError('email', email ? 'err.emailFormat' : 'err.emailRequired');
+          return;
+        }
+        verificationSent = true;
+        emailVerified = false;
+        verificationField.classList.add('visible');
+        sendCodeBtn.textContent = t('emailVerify.resend');
+        toast({ title: t('emailVerify.sent'), type: 'check' });
+        verificationCode.focus();
+      });
+
+      verificationCode.addEventListener('input', () => {
+        verificationCode.value = verificationCode.value.replace(/\D/g, '').slice(0, 4);
+      });
+
+      verifyCodeBtn.addEventListener('click', () => {
+        if (!/^\d{4}$/.test(verificationCode.value)) {
+          showError('verification', 'emailVerify.invalid');
+          return;
+        }
+        emailVerified = true;
+        verificationCode.disabled = true;
+        verifyCodeBtn.disabled = true;
+        verifyCodeBtn.textContent = t('emailVerify.done');
+        verificationField.classList.add('verified');
+        toast({ title: t('emailVerify.success'), type: 'check' });
+      });
+
       root.querySelectorAll('[data-agree]').forEach((row) => {
         row.addEventListener('click', () => {
           const key = row.dataset.agree;
@@ -170,7 +231,10 @@ export function renderOnboarding(_params, root) {
           } else {
             agree[key] = !agree[key];
           }
-          renderAuth();
+          root.querySelector('[data-agree="all"]').classList.toggle('on', agree.tos && agree.privacy && agree.marketing);
+          ['tos', 'privacy', 'marketing'].forEach((item) => {
+            root.querySelector(`[data-agree="${item}"]`).classList.toggle('on', agree[item]);
+          });
         });
       });
       root.querySelectorAll('.agree-view').forEach((v) => {
@@ -192,6 +256,10 @@ export function renderOnboarding(_params, root) {
         toast({ title: t('err.agreeRequired'), type: 'warn' });
         root.querySelector('#agreeBox')?.classList.add('shake');
         setTimeout(() => root.querySelector('#agreeBox')?.classList.remove('shake'), 400);
+        return;
+      }
+      if (isSignup && !emailVerified) {
+        showError(verificationSent ? 'verification' : 'email', verificationSent ? 'emailVerify.required' : 'emailVerify.sendFirst');
         return;
       }
       const name = isSignup ? (root.querySelector('#name')?.value || '') : '';
@@ -273,9 +341,8 @@ export function renderOnboarding(_params, root) {
    * 노출 플랜은 현재 요금제 기준:
    *   - Free(신규 포함) → Basic + Pro 둘 다
    *   - Basic           → Pro 만
-   * X(닫기) 버튼은 5초가 지나야 활성화된다(결제 유도 강화). */
+   * X 버튼으로 결제를 건너뛰고 Free 상태로 서비스를 시작할 수 있다. */
   function renderPlan() {
-    clearCountdown();
     const curPlan = getState().plan;
     const plansToShow = curPlan === 'basic' ? ['pro'] : ['basic', 'pro'];
     if (!plansToShow.includes(chosenPlan)) chosenPlan = 'pro';
@@ -296,7 +363,7 @@ export function renderOnboarding(_params, root) {
 
     root.innerHTML = `
       <div class="onb view fullscreen">
-        <button class="onb-close" id="onbClose" disabled aria-label="${t('aria.close')}"><span id="onbCd">5</span></button>
+        <button class="onb-close" id="onbClose" aria-label="${t('aria.close')}">✕</button>
         ${upsell ? '' : '<div class="onb-progress"><span></span><span></span><span class="on"></span></div>'}
         <div class="onb-body scroll">
           <h1 class="onb-title">${upsell ? t('onb.upsell.title') : t('onb.plan.title')}</h1>
@@ -304,9 +371,7 @@ export function renderOnboarding(_params, root) {
           <div class="plan-options" style="margin-top:18px;">
             ${plansToShow.map(planCard).join('')}
           </div>
-        </div>
-        <div class="onb-foot">
-          <button class="btn-primary" id="startBtn">${t('onb.start')}</button>
+          <p class="plan-select-hint">${t('onb.plan.selectHint')}</p>
         </div>
       </div>
     `;
@@ -314,27 +379,11 @@ export function renderOnboarding(_params, root) {
     root.querySelectorAll('.plan-option').forEach((el) => {
       el.addEventListener('click', () => {
         chosenPlan = el.dataset.plan;
-        root.querySelectorAll('.plan-option').forEach((o) => o.classList.toggle('selected', o === el));
+        setPlan(chosenPlan);
+        finish();
       });
     });
-    root.querySelector('#startBtn').addEventListener('click', () => { setPlan(chosenPlan); finish(); });
-
-    // 5초 카운트다운 → X 버튼 활성화 (활성화 전 클릭은 무시)
-    const closeBtn = root.querySelector('#onbClose');
-    const cdEl = root.querySelector('#onbCd');
-    let remain = 5;
-    countdownTimer = setInterval(() => {
-      remain -= 1;
-      if (remain <= 0) {
-        clearCountdown();
-        closeBtn.classList.add('ready');
-        closeBtn.removeAttribute('disabled');
-        closeBtn.textContent = '✕';
-      } else {
-        cdEl.textContent = remain;
-      }
-    }, 1000);
-    closeBtn.addEventListener('click', () => { if (!closeBtn.hasAttribute('disabled')) finish(); });
+    root.querySelector('#onbClose').addEventListener('click', finish);
   }
 
   function render() {
@@ -345,5 +394,4 @@ export function renderOnboarding(_params, root) {
   }
 
   render();
-  return clearCountdown; // 뷰 전환 시 카운트다운 타이머 정리
 }

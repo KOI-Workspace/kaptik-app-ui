@@ -3,10 +3,9 @@
  */
 import { headerHTML, bindHeader } from '../ui.js';
 import { navigate } from '../router.js';
-import { getState, setState, setPlan, setAgreement, logout, login } from '../state.js';
-import { openPaymentModal, openFollowedArtists, openBillingModal, openLegalDoc, toast, PLANS } from '../modals.js';
-import { t, setLang } from '../i18n.js';
-import { LANGUAGES } from '../data.js';
+import { getState, setState, setPlan, logout, login } from '../state.js';
+import { openPaymentModal, openFollowedArtists, openBillingModal, openConsentSettings, toast, PLANS } from '../modals.js';
+import { t } from '../i18n.js';
 
 // 로그인 수단 라벨 키 (PROVIDER_LABEL → i18n 키 매핑)
 const PROVIDER_KEY = { google: 'provider.google', email: 'provider.email' };
@@ -68,13 +67,11 @@ export function renderMy(_params, root) {
           </div>` : ''}
         </div>
 
-        <p class="settings-group-label">${t('my.group.subtitle')}</p>
+        <p class="settings-group-label">${t('settings.title')}</p>
         <div class="settings-group">
-          <div class="settings-row">
-            <span class="row-label">${t('my.row.appLang')}</span>
-            <select class="row-select" id="langSelect">
-              ${LANGUAGES.map((l) => `<option value="${l.code}" ${l.code === s.uiLang ? 'selected' : ''}>${l.label}</option>`).join('')}
-            </select>
+          <div class="settings-row clickable" id="settingsRow">
+            <span class="row-label">${t('settings.title')}</span>
+            <span class="row-value">〉</span>
           </div>
         </div>
 
@@ -92,17 +89,9 @@ export function renderMy(_params, root) {
 
         <p class="settings-group-label">${t('my.group.legal')}</p>
         <div class="settings-group">
-          <div class="settings-row clickable" id="tosRow">
-            <span class="row-label">${t('my.row.tos')}</span>
+          <div class="settings-row clickable" id="consentRow">
+            <span class="row-label">${t('my.row.consentSettings')}</span>
             <span class="row-value">〉</span>
-          </div>
-          <div class="settings-row clickable" id="privacyRow">
-            <span class="row-label">${t('my.row.privacy')}</span>
-            <span class="row-value">〉</span>
-          </div>
-          <div class="settings-row">
-            <span class="row-label">${t('my.row.marketing')}</span>
-            <button class="toggle ${s.agreements.marketing ? 'on' : ''}" id="tglMarketing" aria-label="${t('my.row.marketing')}"></button>
           </div>
         </div>
 
@@ -138,10 +127,9 @@ export function renderMy(_params, root) {
     navigate('onboarding');         // 로그아웃하면 온보딩(로그인)부터 다시
   });
 
-  // 앱 언어 변경 — UI 전체가 해당 언어로 다시 그려진다 (langchange 이벤트 → app.js)
-  root.querySelector('#langSelect').addEventListener('change', (e) => {
-    setLang(e.target.value);
-    toast({ title: t('toast.langChanged'), type: 'check' });
+  // 앱 알림 및 언어 설정
+  root.querySelector('#settingsRow').addEventListener('click', () => {
+    navigate('settings');
   });
 
   // 팔로우한 아티스트 목록
@@ -149,14 +137,9 @@ export function renderMy(_params, root) {
     openFollowedArtists({ onChange: reRender });
   });
 
-  // 약관 / 동의
-  root.querySelector('#tosRow').addEventListener('click', () => openLegalDoc('tos'));
-  root.querySelector('#privacyRow').addEventListener('click', () => openLegalDoc('privacy'));
-  root.querySelector('#tglMarketing').addEventListener('click', () => {
-    const next = !s.agreements.marketing;
-    setAgreement('marketing', next);
-    toast({ title: t(next ? 'toast.marketingOn' : 'toast.marketingOff'), type: 'check' });
-    reRender();
+  // 약관 문서 확인 및 마케팅 수신 설정
+  root.querySelector('#consentRow').addEventListener('click', () => {
+    openConsentSettings({ onChange: reRender });
   });
 
   root.querySelector('#planRow').addEventListener('click', () => {
