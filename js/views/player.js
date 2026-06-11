@@ -36,6 +36,9 @@ const DRAG_ZONE = 70;
 
 let isUserScrolled = false;
 
+let landscapeSubtitleOverlay = null;
+let panelCollapsed = false;
+
 let activeContextKey = null, activeContextEl = null;
 
 /* ── 유틸 ── */
@@ -157,14 +160,20 @@ function seekToSubtitle(item) {
   updateSubtitle(item.start);
 }
 
-function updateSubtitle(t) {
+function updateSubtitle(time) {
   if (!subtitlesReady) return;
-  const cur = SUBTITLES.find((s) => t >= s.start && t < s.end);
+  const cur = SUBTITLES.find((s) => time >= s.start && time < s.end);
   const nextStart = cur ? cur.start : -1;
   if (nextStart === lastSubtitleStart) return;
   lastSubtitleStart = nextStart;
 
   subtitleList.querySelector('.subtitle-row.current')?.classList.remove('current');
+
+  // 가로 모드 오버레이 텍스트 동기화
+  if (landscapeSubtitleOverlay) {
+    landscapeSubtitleOverlay.textContent = cur ? (cur[currentLang] || cur.en || '') : '';
+  }
+
   if (!cur) return;
   subtitleList
     .querySelector(`.subtitle-item[data-start="${cur.start}"] .subtitle-row`)
@@ -230,6 +239,7 @@ function hideContext() {
 
 /* ── 시트 드래그 / 위치 ── */
 function applySheetTop(top, animate = false) {
+  if (window.matchMedia('(orientation: landscape)').matches) return;
   sheetTop = Math.max(MIN_TOP, Math.min(MAX_TOP(), top));
   if (animate) sheet.classList.add('animating');
   sheet.style.top = sheetTop + 'px';
@@ -277,6 +287,8 @@ export function renderPlayer(params, root) {
   // 상태 리셋
   lastSubtitleStart = -1;
   isUserScrolled = false;
+  panelCollapsed = false;
+  landscapeSubtitleOverlay = null;
   currentLang = getState().defaultLang || 'en';
   subtitlesReady = !(params && params.subtitlePending);
 
@@ -287,6 +299,9 @@ export function renderPlayer(params, root) {
       </div>
 
       <div class="sheet" id="sheet">
+        <button class="panel-toggle-btn" id="panelToggleBtn" aria-label="자막 패널">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
         <button class="scroll-to-top-btn" id="scrollToTopBtn">${t('player.latest')}</button>
         <div class="sheet-content" id="sheetContent">
           ${subtitlesReady ? '' : `
@@ -337,6 +352,11 @@ export function renderPlayer(params, root) {
   subtitleList.className = 'subtitle-list';
   sheetContent.appendChild(subtitleList);
 
+  // 가로 모드: 영상 위에 현재 자막 오버레이 생성
+  landscapeSubtitleOverlay = document.createElement('div');
+  landscapeSubtitleOverlay.className = 'landscape-subtitle-overlay';
+  root.querySelector('#videoArea').appendChild(landscapeSubtitleOverlay);
+
   if (subtitlesReady) {
     rerenderAll();
   } else {
@@ -350,13 +370,15 @@ export function renderPlayer(params, root) {
   requestAnimationFrame(() => {
     const h = videoArea.offsetHeight || 290;
     MIN_TOP = Math.round(h * 0.5);
-    applySheetTop(h + 6);
+    if (!window.matchMedia('(orientation: landscape)').matches) applySheetTop(h + 6);
   });
 
   // 이벤트
   bindSheetDrag();
   bindScroll();
   bindLang(root);
+  bindPanelToggle(root);
+  bindOrientationChange();
   root.querySelector('#exitFab').addEventListener('click', () => navigate('home'));
   updateScrollToTopLabel();
 
@@ -446,6 +468,36 @@ function bindLang(root) {
 }
 function closeLangPanel() { if (langPanel) langPanel.classList.remove('open'); }
 
+/* ── 가로 모드: 자막 패널 열기/닫기 토글 ── */
+function bindPanelToggle(root) {
+  const btn = root.querySelector('#panelToggleBtn');
+  if (!btn) return;
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    panelCollapsed = !panelCollapsed;
+    sheet.classList.toggle('panel-collapsed', panelCollapsed);
+  });
+}
+
+/* ── 방향 전환 시 시트 top 관리 ── */
+function bindOrientationChange() {
+  const mq = window.matchMedia('(orientation: landscape)');
+  const onChange = () => {
+    if (mq.matches) {
+      // 가로 전환: CSS가 top을 제어하므로 인라인 style 제거
+      if (sheet) sheet.style.top = '';
+    } else {
+      // 세로 전환: 비디오 영역 기준으로 시트 위치 재계산
+      const va = document.querySelector('#videoArea');
+      const h = va ? va.offsetHeight : 290;
+      MIN_TOP = Math.round(h * 0.5);
+      applySheetTop(sheetTop > MIN_TOP ? sheetTop : h + 6);
+    }
+  };
+  mq.addEventListener('change', onChange);
+  cleanup._orientation = () => mq.removeEventListener('change', onChange);
+}
+
 /* ── 뷰 정리 ── */
 function cleanup() {
   stopPolling();
@@ -455,6 +507,9 @@ function cleanup() {
   }
   if (cleanup._drag) cleanup._drag();
   if (cleanup._lang) cleanup._lang();
+  if (cleanup._orientation) cleanup._orientation();
   if (controller) controller.destroy();
   controller = null;
+  landscapeSubtitleOverlay = null;
+  panelCollapsed = false;
 }

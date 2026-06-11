@@ -196,3 +196,130 @@
   background-repeat: no-repeat; background-position: right 9px center;
 }
 .lang-select option { background: #1a1a1a; color: var(--text-1); }
+
+/* ── 가로 모드: 영상 위 현재 자막 오버레이 ── */
+.landscape-subtitle-overlay {
+  display: none;
+  position: absolute;
+  bottom: 16%;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 82%;
+  text-align: center;
+  padding: 6px 14px;
+  background: rgba(0, 0, 0, 0.62);
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.96);
+  pointer-events: none;
+  z-index: 150;
+  backdrop-filter: blur(3px);
+  word-break: break-word;
+  transition: opacity 0.2s ease;
+}
+.landscape-subtitle-overlay:empty { opacity: 0; }
+
+/* 패널 토글 탭 — 세로 모드에서 숨김 */
+.panel-toggle-btn { display: none; }
+
+/* ── 가로 모드 레이아웃 ── */
+@media (orientation: landscape) {
+  /* 전체 너비 사용, 가로 2단 레이아웃 */
+  .player-view {
+    display: flex;
+    flex-direction: row;
+    max-width: none;
+  }
+
+  /* 영상 영역: 남은 공간 모두 사용 */
+  .video-area {
+    position: relative !important;
+    top: auto !important;
+    flex: 1 1 auto;
+    height: 100%;
+    min-width: 0;
+  }
+
+  /* 16:9 비율 해제 — 영상이 전체 높이 채움 */
+  .video-frame {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: unset;
+  }
+
+  /* 자막 오버레이 활성화 */
+  .landscape-subtitle-overlay { display: block; }
+
+  /* 시트 → 우측 고정 패널 */
+  .sheet {
+    position: relative !important;
+    top: auto !important;
+    flex: 0 0 200px;
+    width: 200px;
+    height: 100%;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-top: none;
+    border-left: 1px solid var(--border-sub);
+    box-shadow: none;
+    background: rgba(8, 8, 8, 0.85);
+    overflow: visible; /* 토글 탭이 왼쪽으로 돌출되도록 */
+    transition: flex-basis 0.3s var(--ease), width 0.3s var(--ease), opacity 0.3s var(--ease);
+  }
+
+  /* 패널 접힘 상태 */
+  .sheet.panel-collapsed {
+    flex-basis: 44px;
+    width: 44px;
+    opacity: 0.45;
+  }
+
+  .sheet.panel-collapsed .sheet-content,
+  .sheet.panel-collapsed .scroll-to-top-btn {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+
+  /* 토글 탭: 패널 왼쪽 가장자리에 붙은 핸들 */
+  .panel-toggle-btn {
+    display: flex;
+    position: absolute;
+    left: -22px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 22px;
+    height: 48px;
+    background: rgba(18, 18, 18, 0.95);
+    border: 1px solid var(--border-sub);
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.5);
+    z-index: 250;
+    padding: 0;
+  }
+
+  .panel-toggle-btn:active { color: var(--text-1); }
+
+  /* 접힘 상태에서 아이콘 방향 반전 */
+  .panel-toggle-btn svg { transition: transform 0.3s var(--ease); }
+  .sheet.panel-collapsed .panel-toggle-btn svg { transform: rotate(180deg); }
+
+  /* FAB 그룹 — 패널 왼쪽에 위치 */
+  .fab-group {
+    right: calc(200px + 16px);
+    transition: right 0.3s var(--ease);
+  }
+
+  /* 언어 팝업 — 패널 왼쪽에 위치 */
+  .lang-panel {
+    right: calc(200px + 14px);
+    bottom: 14px;
+    transition: right 0.3s var(--ease);
+  }
+}
