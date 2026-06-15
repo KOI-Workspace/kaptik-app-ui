@@ -23,6 +23,16 @@ export function openNativeWebView(url) {
   return p.open({ url });
 }
 
+/** 실제 Safari에서 URL을 열어 Safari 로그인 세션을 사용한다 */
+export function openInSafari(url) {
+  const p = getPlugin();
+  if (!p) {
+    window.open(url, '_blank', 'noopener,noreferrer');
+    return Promise.resolve();
+  }
+  return p.openSafari({ url });
+}
+
 /** 네이티브 WKWebView를 닫고 Capacitor WebView를 복원한다 */
 export function closeNativeWebView() {
   return getPlugin()?.close() ?? Promise.resolve();

@@ -1,7 +1,10 @@
 .DS_Store
 node_modules/
 
-# Capacitor 네이티브 프로젝트
-ios/
+# Capacitor 생성물과 사용자별 Xcode 설정
+ios/App/App/public/
+ios/App/App.xcodeproj/xcuserdata/
+ios/App/App.xcworkspace/xcuserdata/
+ios/App/CapApp-SPM/.build/
 android/
 package-lock.json

@@ -567,6 +567,23 @@
   font-size: 15px; cursor: pointer;
 }
 
+.safari-guide-card { position: relative; }
+.safari-guide-icon {
+  font-size: 21px;
+  font-weight: 900;
+}
+.safari-guide-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: -4px 0 22px;
+  padding-left: 22px;
+  color: var(--text-2);
+  font-size: 14px;
+  line-height: 1.55;
+}
+.safari-guide-steps strong { color: var(--text-1); }
+
 /* 결제 플랜 카드 */
 .plan-card {
   border: 1px solid rgba(131, 83, 235, 0.5);

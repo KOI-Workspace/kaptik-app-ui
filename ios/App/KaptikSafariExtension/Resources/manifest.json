@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Kaptik for Weverse",
+  "version": "1.0.0",
+  "description": "Safari에서 Weverse 로그인 상태와 Kaptik 확장 동작을 확인합니다.",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://weverse.io/*",
+        "https://*.weverse.io/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+  "host_permissions": [
+    "https://weverse.io/*",
+    "https://*.weverse.io/*"
+  ],
+  "permissions": []
+}

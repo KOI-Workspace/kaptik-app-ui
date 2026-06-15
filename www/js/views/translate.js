@@ -14,7 +14,13 @@ import {
   SUBTITLES, ANNOTATIONS, SPEAKER_COLORS, SPEAKER_INITIALS, SPEAKER_IMAGES,
   LANGUAGES, SCROLL_TO_TOP_LABELS,
 } from '../data.js';
-import { isNativeEnv, openNativeWebView, closeNativeWebView, navigateNativeWebView } from '../native-webview.js';
+import {
+  isNativeEnv,
+  openNativeWebView,
+  openInSafari,
+  closeNativeWebView,
+  navigateNativeWebView,
+} from '../native-webview.js';
 
 /* ── 플랫폼 정의 ── */
 const PLATFORMS = [
@@ -60,6 +66,7 @@ let trOverlaySettings = { showSpeaker: true, showTranscript: true, subtitleLines
 let trActiveContextKey = null, trActiveContextEl = null;
 let trRoot = null;
 let trCleanupFns = [];
+const safariGuideKey = 'kaptik.safari-extension-guide.v1';
 
 /* ── 유틸 ── */
 function esc(str) {
@@ -82,6 +89,64 @@ function buildAnnotated(text) {
     );
   });
   return result;
+}
+
+function openWeverseSafari(platform) {
+  openInSafari(platform.url).catch((error) => {
+    console.error('Safari에서 Weverse 열기 실패:', error);
+  });
+}
+
+/**
+ * Safari 확장은 사용자가 iOS 설정에서 한 번 직접 켜야 한다.
+ * 첫 진입에만 설정 경로를 안내하고 이후에는 Safari를 바로 연다.
+ */
+function openWeverseWithGuide(platform) {
+  if (localStorage.getItem(safariGuideKey) === 'done') {
+    openWeverseSafari(platform);
+    return;
+  }
+
+  const modalRoot = document.querySelector('#modal-root');
+  if (!modalRoot) {
+    openWeverseSafari(platform);
+    return;
+  }
+
+  modalRoot.innerHTML = `
+    <div class="scrim center" id="safariGuideScrim">
+      <section class="modal-card safari-guide-card" role="dialog" aria-modal="true" aria-labelledby="safariGuideTitle">
+        <button class="modal-close-x" id="safariGuideClose" aria-label="닫기">✕</button>
+        <div class="modal-icon safari-guide-icon">K</div>
+        <h2 class="modal-title" id="safariGuideTitle">Safari 확장을 먼저 켜주세요</h2>
+        <p class="modal-desc">처음 한 번만 아래 설정이 필요해요. 설정 후 Safari에서 Weverse 로그인을 진행합니다.</p>
+        <ol class="safari-guide-steps">
+          <li><strong>설정 → 앱 → Safari → 확장 프로그램</strong>으로 이동</li>
+          <li><strong>Kaptik for Weverse</strong>를 켜기</li>
+          <li><strong>weverse.io</strong> 접근을 허용하기</li>
+        </ol>
+        <div class="modal-actions">
+          <button class="btn-primary" id="safariGuideContinue">Safari에서 Weverse 열기</button>
+          <button class="btn-secondary" id="safariGuideLater">나중에</button>
+        </div>
+      </section>
+    </div>
+  `;
+
+  const closeGuide = () => {
+    modalRoot.innerHTML = '';
+  };
+  const continueButton = modalRoot.querySelector('#safariGuideContinue');
+  continueButton.addEventListener('click', () => {
+    localStorage.setItem(safariGuideKey, 'done');
+    closeGuide();
+    openWeverseSafari(platform);
+  });
+  modalRoot.querySelector('#safariGuideClose').addEventListener('click', closeGuide);
+  modalRoot.querySelector('#safariGuideLater').addEventListener('click', closeGuide);
+  modalRoot.querySelector('#safariGuideScrim').addEventListener('click', (event) => {
+    if (event.target === event.currentTarget) closeGuide();
+  });
 }
 
 /* ── 가상 재생 클럭 (자막 동기화용) ── */
@@ -510,7 +575,15 @@ function renderPlatformSelect() {
   trRoot.querySelectorAll('[data-platform]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const p = PLATFORMS.find((x) => x.id === btn.dataset.platform);
-      if (p) renderWebView(p);
+      if (!p) return;
+
+      // Weverse 로그인 PoC는 WKWebView가 아닌 실제 Safari에서 진행한다.
+      if (p.id === 'weverse' && isNativeEnv()) {
+        openWeverseWithGuide(p);
+        return;
+      }
+
+      renderWebView(p);
     });
   });
 }
