@@ -49,6 +49,7 @@ public class NativeWebViewPlugin: CAPPlugin {
     }
 
     DispatchQueue.main.async {
+      print("[Kaptik] Safari 열기: \(url.absoluteString)")
       UIApplication.shared.open(url, options: [:]) { opened in
         if opened {
           call.resolve()

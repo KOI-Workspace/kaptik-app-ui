@@ -3,9 +3,18 @@
  * 앱(iOS) 환경에서만 동작하고, 웹(localhost)에서는 no-op으로 처리한다
  */
 
-/** 플러그인을 그때그때 조회 — 앱 시작 시 한 번만 체크하면 아직 준비 안 됐을 수 있음 */
+let nativeWebViewPlugin = null;
+
+/** Capacitor 8에서는 커스텀 네이티브 플러그인을 JavaScript에서 명시적으로 등록해야 한다. */
 function getPlugin() {
-  return window.Capacitor?.Plugins?.NativeWebViewPlugin;
+  const capacitor = window.Capacitor;
+  if (!capacitor?.isNativePlatform?.()) return null;
+  if (!capacitor.isPluginAvailable?.('NativeWebViewPlugin')) return null;
+
+  if (!nativeWebViewPlugin) {
+    nativeWebViewPlugin = capacitor.registerPlugin('NativeWebViewPlugin');
+  }
+  return nativeWebViewPlugin;
 }
 
 /** 네이티브 WKWebView 사용 가능 여부 (호출 시점에 체크) */
@@ -27,9 +36,11 @@ export function openNativeWebView(url) {
 export function openInSafari(url) {
   const p = getPlugin();
   if (!p) {
+    console.warn('[Kaptik] NativeWebViewPlugin 없음 — 새 브라우저 창으로 폴백');
     window.open(url, '_blank', 'noopener,noreferrer');
     return Promise.resolve();
   }
+  console.info('[Kaptik] NativeWebViewPlugin openSafari:', url);
   return p.openSafari({ url });
 }
 
