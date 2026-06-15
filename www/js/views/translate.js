@@ -29,6 +29,7 @@ const PLATFORMS = [
     name: 'Weverse',
     sub: '위버스 라이브 · 아티스트 영상',
     url: 'https://weverse.io/',
+    safariUrl: 'https://weverse.io/w/?kaptik_safari=1',
     iconBg: 'linear-gradient(135deg,#222,#444)',
     iconColor: '#fff',
     glyph: 'W',
@@ -92,7 +93,7 @@ function buildAnnotated(text) {
 }
 
 function openWeverseSafari(platform) {
-  openInSafari(platform.url).catch((error) => {
+  openInSafari(platform.safariUrl || platform.url).catch((error) => {
     console.error('Safari에서 Weverse 열기 실패:', error);
   });
 }

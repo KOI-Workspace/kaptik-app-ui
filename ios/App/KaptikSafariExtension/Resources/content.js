@@ -5,6 +5,14 @@
   let lastUrl = location.href;
   let renderTimer = null;
 
+  // /w/*는 Weverse가 Universal Link에서 제외한 Safari 진입 경로다.
+  // Safari 안에 진입한 뒤 같은 탭에서 일반 홈페이지로 이동한다.
+  const entryUrl = new URL(location.href);
+  if (entryUrl.pathname === '/w/' && entryUrl.searchParams.get('kaptik_safari') === '1') {
+    location.replace('https://weverse.io/');
+    return;
+  }
+
   function getPageState() {
     if (location.hostname === 'account.weverse.io') {
       return 'login';
