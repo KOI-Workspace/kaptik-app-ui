@@ -1,6 +1,41 @@
 /**
  * 앱 부트스트랩 — 라우트 등록 + 하단 네비 + 라우터 시작
  */
+
+/* ── Capacitor 초기화 (네이티브 앱 환경에서만 실행) ── */
+async function initCapacitor() {
+  // 번들러 없는 환경이라 dynamic import로 bare specifier를 쓸 수 없음
+  // → 네이티브 앱이 자동 주입하는 window.Capacitor.Plugins 전역 사용
+  if (!window.Capacitor) return;
+
+  const { StatusBar, SplashScreen, App } = window.Capacitor.Plugins;
+
+  try {
+    // 상태바: 다크 모드, 앱 배경색과 통일
+    await StatusBar.setStyle({ style: 'DARK' });
+    await StatusBar.setBackgroundColor({ color: '#050505' });
+  } catch {
+    // StatusBar를 지원하지 않는 기기 무시
+  }
+
+  try {
+    // 스플래시 스크린 숨기기 (앱 준비 완료 후)
+    await SplashScreen.hide({ fadeOutDuration: 300 });
+  } catch (e) {
+    console.error('SplashScreen.hide 실패:', e);
+  }
+
+  // Android 뒤로 가기 버튼 처리
+  try {
+    App.addListener('backButton', ({ canGoBack }) => {
+      if (canGoBack) window.history.back();
+      else App.exitApp();
+    });
+  } catch {
+    // iOS에서는 backButton 없으므로 무시
+  }
+}
+
 import { registerRoute, navigate, startRouter, getCurrentRoute } from './router.js';
 import { renderHome } from './views/home.js';
 import { renderTranslate } from './views/translate.js';
@@ -9,6 +44,7 @@ import { renderPlayer } from './views/player.js';
 import { renderLogin } from './views/login.js';
 import { renderOnboarding } from './views/onboarding.js';
 import { renderSettings } from './views/settings.js';
+import { renderBilling } from './views/billing.js';
 import { getState } from './state.js';
 import { t } from './i18n.js';
 
@@ -49,8 +85,10 @@ registerRoute('player', renderPlayer);
 registerRoute('login', renderLogin);
 registerRoute('onboarding', renderOnboarding);
 registerRoute('settings', renderSettings);
+registerRoute('billing', renderBilling);
 
 renderNav();
+initCapacitor();
 
 // 부팅 라우팅 — 온보딩 미완료면 온보딩부터, 완료 유저가 온보딩 해시면 홈으로 교정
 const onboarded = getState().onboardingDone;

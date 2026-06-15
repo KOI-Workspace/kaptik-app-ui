@@ -1,0 +1,49 @@
+{
+  "appId": "io.kaptik.app",
+  "appName": "Kaptik",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https",
+    "allowNavigation": [
+      "*.weverse.io",
+      "weverse.io",
+      "*.hive.io",
+      "id.weverse.io",
+      "*.youtube.com",
+      "youtube.com",
+      "m.youtube.com",
+      "*.googlevideo.com",
+      "*.ytimg.com",
+      "*.google.com",
+      "accounts.google.com"
+    ]
+  },
+  "ios": {
+    "contentInset": "always",
+    "backgroundColor": "#050505",
+    "preferredContentMode": "mobile",
+    "allowsLinkPreview": false,
+    "scrollEnabled": false,
+    "limitsNavigationsToAppBoundDomains": false
+  },
+  "android": {
+    "backgroundColor": "#050505",
+    "allowMixedContent": true
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": false,
+      "backgroundColor": "#050505",
+      "androidSplashResourceName": "splash",
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "style": "Dark",
+      "backgroundColor": "#050505",
+      "overlaysWebView": true
+    },
+    "CapacitorHttp": {
+      "enabled": true
+    }
+  }
+}

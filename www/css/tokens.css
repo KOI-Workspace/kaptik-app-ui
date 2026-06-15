@@ -58,15 +58,17 @@ html, body {
   color: var(--text-1);
   font-family: var(--font);
   -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none; /* 네이티브 앱처럼 rubber band 튕김 방지 */
 }
 
 /* 앱 컨테이너 — 모바일 폭 중앙 정렬 */
 #app {
   position: relative;
   max-width: var(--app-max);
-  min-height: 100dvh;
+  height: 100dvh;
   margin: 0 auto;
-  overflow-x: hidden;
+  /* overflow: clip은 스크롤 컨테이너를 만들지 않아 position:fixed가 뷰포트 기준으로 유지됨 */
+  overflow-x: clip;
 }
 
 button { font-family: inherit; }

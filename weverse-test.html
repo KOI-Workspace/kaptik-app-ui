@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Weverse 임베드 테스트</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #000; color: #fff; font-family: sans-serif; height: 100dvh; display: flex; flex-direction: column; }
+
+    /* ── 상태 표시 ── */
+    #status {
+      padding: 12px 16px;
+      background: #111;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid #222;
+    }
+    #dot { width: 8px; height: 8px; border-radius: 50%; background: #888; flex-shrink: 0; }
+    #dot.ok { background: #4caf50; }
+    #dot.fail { background: #f44336; }
+
+    /* ── 테스트 A: 순수 iframe ── */
+    .section { flex: 1; position: relative; overflow: hidden; }
+    .section-label {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      background: rgba(0,0,0,0.8);
+      padding: 6px 12px;
+      font-size: 11px;
+      color: #aaa;
+      z-index: 10;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* ── 마스킹 오버레이 방식 ── */
+    .mask-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    .mask-container iframe {
+      position: absolute;
+      inset: 0;
+    }
+    /* 상단 헤더 가리기 */
+    .mask-top {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 56px;
+      background: #000;
+      z-index: 5;
+    }
+    /* 하단 댓글 영역 가리기 */
+    .mask-bottom {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 40%;
+      background: #000;
+      z-index: 5;
+    }
+
+    /* ── 탭 전환 ── */
+    #tabs {
+      display: flex;
+      background: #111;
+      border-top: 1px solid #222;
+    }
+    #tabs button {
+      flex: 1;
+      padding: 10px;
+      background: none;
+      border: none;
+      color: #888;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    #tabs button.active { color: #fff; border-top: 2px solid #8353EB; }
+  </style>
+</head>
+<body>
+
+  <div id="status">
+    <div id="dot"></div>
+    <span id="statusText">iframe 로딩 중...</span>
+  </div>
+
+  <!-- 탭 A: 그대로 로드 -->
+  <div class="section" id="tabA">
+    <div class="section-label">테스트 A — Weverse 그대로 로드 (X-Frame-Options 테스트)</div>
+    <iframe
+      id="iframeA"
+      src="https://weverse.io/bts/live"
+      allow="autoplay; fullscreen"
+      allowfullscreen
+    ></iframe>
+  </div>
+
+  <!-- 탭 B: 마스킹 오버레이 방식 (기본 숨김) -->
+  <div class="section" id="tabB" style="display:none">
+    <div class="section-label">테스트 B — 마스킹 오버레이 (헤더+댓글 가리기)</div>
+    <div class="mask-container">
+      <iframe
+        id="iframeB"
+        src="https://weverse.io/bts/live"
+        allow="autoplay; fullscreen"
+        allowfullscreen
+      ></iframe>
+      <div class="mask-top"></div>
+      <div class="mask-bottom"></div>
+    </div>
+  </div>
+
+  <!-- 탭 전환 -->
+  <div id="tabs">
+    <button class="active" onclick="showTab('A', this)">A: 전체 로드</button>
+    <button onclick="showTab('B', this)">B: 마스킹</button>
+  </div>
+
+  <script>
+    // iframe 로드 성공/실패 감지
+    const iframeA = document.getElementById('iframeA');
+    const dot = document.getElementById('dot');
+    const statusText = document.getElementById('statusText');
+
+    // 로드 완료 이벤트 (X-Frame-Options 차단 시 load는 여전히 발생하지만 빈 페이지)
+    iframeA.addEventListener('load', () => {
+      // contentDocument 접근 가능 여부로 차단 여부 확인
+      try {
+        // 크로스오리진이면 SecurityError 발생
+        const doc = iframeA.contentDocument;
+        if (doc && doc.body && doc.body.innerHTML.length > 0) {
+          dot.className = 'ok';
+          statusText.textContent = '✅ iframe 로드 성공 — 영상 접근 가능';
+        } else {
+          dot.className = 'fail';
+          statusText.textContent = '❌ 로드됐지만 내용 없음 (X-Frame-Options 차단 가능성)';
+        }
+      } catch (e) {
+        // SecurityError = 크로스오리진 → 실제로 로드는 됐다는 의미
+        if (e.name === 'SecurityError') {
+          dot.className = 'ok';
+          statusText.textContent = '✅ 크로스오리진 로드됨 (정상) — 아래에서 영상 확인';
+        } else {
+          dot.className = 'fail';
+          statusText.textContent = `❌ 오류: ${e.message}`;
+        }
+      }
+    });
+
+    iframeA.addEventListener('error', () => {
+      dot.className = 'fail';
+      statusText.textContent = '❌ iframe 로드 실패 (서버 차단)';
+    });
+
+    function showTab(tab, btn) {
+      document.getElementById('tabA').style.display = tab === 'A' ? '' : 'none';
+      document.getElementById('tabB').style.display = tab === 'B' ? '' : 'none';
+      document.querySelectorAll('#tabs button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+  </script>
+
+</body>
+</html>

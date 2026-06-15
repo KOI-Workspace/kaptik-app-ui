@@ -275,7 +275,7 @@ export function openArtistSearch({ onChange } = {}) {
 
 /* ─────────────────────────────────────────
    팔로우한 아티스트 목록 모달 (My에서 진입)
-   - 팔로우 목록 + 각 아티스트의 라이브 알림 스위치 상태 확인/토글 + 언팔로우
+   - 팔로우 목록 + 언팔로우 (알림 설정은 Settings > Notifications에서 관리)
    ───────────────────────────────────────── */
 export function openFollowedArtists({ onChange } = {}) {
   const scrim = document.createElement('div');
@@ -291,9 +291,7 @@ export function openFollowedArtists({ onChange } = {}) {
               ${artistAvatar(a)}
               <div class="asr-info">
                 <div class="asr-name">${a.name}${a.live ? ' <span class="asr-live">LIVE</span>' : ''}</div>
-                <div class="asr-status ${f.notify ? 'on' : 'off'}">${f.notify ? t('followed.notifOn') : t('followed.notifOff')}</div>
               </div>
-              <button class="toggle ${f.notify ? 'on' : ''}" data-act="notify" aria-label="${t('artist.notify')}"></button>
               <button class="asr-unfollow" data-act="unfollow" aria-label="${t('artist.following')}">✕</button>
             </div>`;
         }).join('')
@@ -311,12 +309,6 @@ export function openFollowedArtists({ onChange } = {}) {
 
     scrim.querySelectorAll('.artist-result').forEach((row) => {
       const id = row.dataset.id;
-      row.querySelector('[data-act="notify"]').addEventListener('click', (e) => {
-        const cur = getFollow(id);
-        setFollowNotify(id, !(cur && cur.notify));
-        render();
-        if (onChange) onChange();
-      });
       row.querySelector('[data-act="unfollow"]').addEventListener('click', () => {
         unfollowArtist(id);
         render();

@@ -4,7 +4,7 @@
 import { headerHTML, bindHeader } from '../ui.js';
 import { navigate } from '../router.js';
 import { getState, setState, setPlan, logout, login } from '../state.js';
-import { openPaymentModal, openFollowedArtists, openBillingModal, openConsentSettings, toast, PLANS } from '../modals.js';
+import { openPaymentModal, openFollowedArtists, openConsentSettings, toast } from '../modals.js';
 import { t } from '../i18n.js';
 
 // 로그인 수단 라벨 키 (PROVIDER_LABEL → i18n 키 매핑)
@@ -77,13 +77,12 @@ export function renderMy(_params, root) {
 
         <p class="settings-group-label">${t('my.group.membership')}</p>
         <div class="settings-group">
-          <div class="settings-row">
+          <div class="settings-row ${s.plan !== 'free' ? 'clickable' : ''}" id="planRow">
             <span class="row-label">${t('my.row.currentPlan')}</span>
-            <span class="plan-badge ${s.plan}">${PLAN_BADGE[s.plan]}</span>
-          </div>
-          <div class="settings-row clickable" id="planRow">
-            <span class="row-label">${s.plan === 'pro' ? t('my.row.managePayment') : t('my.row.upgrade')}</span>
-            <span class="row-value brand">${s.plan === 'free' ? '〉' : `${PLANS[s.plan].price} ${t('my.perMonth')}`}</span>
+            <span class="plan-row-right">
+              <span class="plan-badge ${s.plan}">${PLAN_BADGE[s.plan]}</span>
+              ${s.plan !== 'free' ? '<span class="row-value">〉</span>' : ''}
+            </span>
           </div>
         </div>
 
@@ -142,10 +141,8 @@ export function renderMy(_params, root) {
     openConsentSettings({ onChange: reRender });
   });
 
-  root.querySelector('#planRow').addEventListener('click', () => {
-    // Pro/Basic이면 멤버십 관리(변경/해지), Free면 결제 유도
-    if (s.plan === 'free') openPaymentModal({ select: 'basic', onSuccess: reRender });
-    else openBillingModal({ onChange: reRender });
+  root.querySelector('#planRow')?.addEventListener('click', () => {
+    if (s.plan !== 'free') navigate('billing');
   });
 
   // 개발용 토글 — 로그인 ON 시 온보딩은 건너뛴 것으로 처리(시연 편의)

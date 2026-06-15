@@ -3,7 +3,7 @@
 /* ─────────────────────────────────────────
    뷰 컨테이너 — 화면 전환 페이드
    ───────────────────────────────────────── */
-#view-root { min-height: 100dvh; }
+#view-root { height: 100%; overflow-y: scroll; -webkit-overflow-scrolling: touch; }
 
 .view {
   padding-bottom: calc(var(--nav-h) + var(--nav-bottom-gap) + 28px);
@@ -20,11 +20,11 @@
   top: 0;
   z-index: 20;
   background: var(--page);
-  height: 60px;
+  height: calc(60px + env(safe-area-inset-top));
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 var(--content-pad);
+  padding: env(safe-area-inset-top) var(--content-pad) 0;
   border-bottom: 1px solid var(--border-sub);
 }
 
@@ -738,13 +738,13 @@
    온보딩
    ───────────────────────────────────────── */
 .onb {
-  min-height: 100dvh;
+  height: 100dvh;
   display: flex; flex-direction: column;
   padding: calc(20px + env(safe-area-inset-top)) 24px calc(20px + env(safe-area-inset-bottom));
   position: relative;
 }
-.onb-body { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-.onb-body.scroll { justify-content: flex-start; overflow-y: auto; padding-top: 8px; }
+.onb-body { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; }
+.onb-body.scroll { justify-content: flex-start; overflow-y: scroll; -webkit-overflow-scrolling: touch; padding-top: 8px; }
 
 /* 인증 메인 화면 레이아웃 */
 .onb-auth-main { gap: 0; padding-top: 0; }
@@ -938,3 +938,237 @@
   display: block; margin-top: 5px; max-width: 260px;
   color: var(--text-3); font-size: 12px; font-weight: 500; line-height: 1.45;
 }
+
+/* 알림 설정 — 아티스트별 토글 목록 */
+.notif-artist-list {
+  padding: 0 0 6px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.notif-artist-list--hidden { display: none; }
+.notif-artist-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 11px 20px;
+  gap: 12px;
+}
+.notif-artist-name {
+  font-size: 14px; font-weight: 500; color: var(--text-1);
+  flex: 1; min-width: 0;
+}
+.notif-artist-empty {
+  padding: 12px 20px 6px;
+  font-size: 13px; color: var(--text-3); font-weight: 500;
+  margin: 0;
+}
+
+/* 멤버십 — 플랜 배지와 화살표 나란히 */
+.plan-row-right {
+  display: flex; align-items: center; gap: 8px;
+}
+
+/* 멤버십 관리 — 액션 버튼 영역 */
+.billing-actions {
+  display: flex; flex-direction: column; gap: 10px;
+  margin-top: 24px; padding: 0 0 8px;
+}
+
+/* ─────────────────────────────────────────
+   Translate — 플랫폼 선택 + 실제 사이트 WebView + Kaptik 자막 오버레이
+   ───────────────────────────────────────── */
+
+/* 네이티브 WKWebView 모드: Capacitor WebView 투명화 + 터치 통과 */
+body.native-webview-mode,
+body.native-webview-mode .tr-webview-root {
+  background: transparent !important;
+}
+/* 터치를 아래 네이티브 WKWebView로 통과시킴 (바텀시트·FAB·URL바는 auto로 유지됨) */
+body.native-webview-mode .tr-webview-root {
+  pointer-events: none;
+}
+
+/* WebView 루트: 하단 네비 위까지 전체 화면, left/transform으로 centering */
+.tr-webview-root {
+  position: fixed;
+  top: env(safe-area-inset-top);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--app-max);
+  bottom: calc(var(--nav-h) + var(--nav-bottom-gap));
+  background: #000;
+  overflow: hidden;
+  z-index: 10;
+}
+.tr-webview-root iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  border: 0;
+}
+
+/* Kaptik 오버레이: iframe 위에 pointer-events: none 기본 */
+.tr-kaptik-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* 상단 URL 바 */
+.tr-url-bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 48px;
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 12px;
+  background: rgba(10,10,10,0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  pointer-events: auto;
+  z-index: 110;
+}
+.tr-back-platform {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: rgba(255,255,255,0.1); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.8); flex-shrink: 0;
+}
+.tr-back-platform:active { background: rgba(255,255,255,0.18); }
+.tr-url-display {
+  flex: 1; display: flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px; padding: 6px 10px;
+  min-width: 0;
+}
+.tr-url-icon {
+  width: 20px; height: 20px; border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; flex-shrink: 0;
+}
+.tr-url-text {
+  font-size: 13px; color: rgba(255,255,255,0.6);
+  font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* 바텀시트 드래그 핸들 */
+.tr-sheet-webview { pointer-events: auto; }
+.tr-sheet-handle {
+  cursor: grab; padding: 8px 16px 0;
+  touch-action: none;
+}
+.tr-sheet-handle:active { cursor: grabbing; }
+.tr-sheet-handle-bar {
+  width: 36px; height: 4px; border-radius: 2px;
+  background: rgba(255,255,255,0.25); margin: 0 auto 10px;
+}
+.tr-sheet-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-bottom: 8px; border-bottom: 1px solid var(--border-sub);
+}
+.tr-sheet-title {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 13px; font-weight: 600; color: var(--text-2);
+}
+.tr-lang-fab { width: 32px !important; height: 32px !important; }
+
+/* 현재 자막 오버레이 */
+.tr-subtitle-overlay {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 86%;
+  padding: 8px 14px 10px;
+  background: rgba(0,0,0,0.62);
+  border-radius: 10px;
+  pointer-events: none;
+  z-index: 105;
+  backdrop-filter: blur(3px);
+  transition: opacity 0.2s ease;
+  min-width: 80px;
+}
+
+/* 자막 시작 FAB */
+.tr-fab-group {
+  position: absolute;
+  right: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  pointer-events: auto;
+  z-index: 120;
+}
+.tr-caption-fab {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--brand);
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(131,83,235,0.5);
+  transition: transform 120ms, opacity 120ms;
+}
+.tr-caption-fab:active { opacity: 0.85; transform: scale(0.95); }
+
+/* 설정 패널 — FAB 위에 위치 */
+.tr-lang-panel-webview {
+  position: absolute !important;
+  right: 14px !important;
+  bottom: calc(16px + 60px + env(safe-area-inset-bottom)) !important;
+  top: auto !important;
+  pointer-events: auto;
+}
+
+/* iframe 차단 안내 (YouTube 등에서 X-Frame-Options 차단 시) */
+.tr-iframe-error {
+  position: absolute;
+  inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.85);
+  pointer-events: auto;
+  z-index: 200;
+}
+.tr-iframe-error-inner { text-align: center; padding: 32px 24px; max-width: 280px; }
+.tr-iframe-error-icon { font-size: 36px; margin-bottom: 14px; }
+.tr-iframe-error-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+.tr-iframe-error-desc { font-size: 13px; color: var(--text-3); line-height: 1.6; }
+
+/* 가로 모드: 네비게이션 바 가려지므로 bottom을 0으로 */
+@media (orientation: landscape) and (max-height: 500px) {
+  .tr-webview-root { bottom: 0; }
+  .tr-url-bar { display: none; }
+}
+
+/* 플랫폼 선택 화면 */
+.tr-platform-view {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  min-height: calc(100dvh - var(--nav-h) - var(--nav-bottom-gap) - 28px);
+  padding: 0 24px;
+  gap: 20px;
+}
+.tr-platform-title {
+  font-size: 22px; font-weight: 700; letter-spacing: -0.03em;
+  text-align: center; line-height: 1.35;
+}
+.tr-platform-title span { color: var(--brand); }
+.tr-platform-desc {
+  font-size: 14px; color: var(--text-3); text-align: center; line-height: 1.6; margin: 0;
+}
+.tr-platform-cards {
+  display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 320px;
+}
+.tr-platform-card {
+  display: flex; align-items: center; gap: 16px;
+  padding: 18px 20px; border-radius: 16px;
+  background: var(--surface); border: 1px solid var(--border);
+  cursor: pointer; text-align: left; width: 100%;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.tr-platform-card:active { background: var(--surface-2); }
+.tr-platform-card-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 800; flex-shrink: 0;
+}
+.tr-platform-card-text { flex: 1; }
+.tr-platform-card-name { font-size: 16px; font-weight: 700; margin-bottom: 3px; }
+.tr-platform-card-sub { font-size: 12px; color: var(--text-3); }

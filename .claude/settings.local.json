@@ -25,7 +25,23 @@
       "Bash(lsof -nP -iTCP:8000 -sTCP:LISTEN)",
       "Bash(node --input-type=module)",
       "Bash(node *)",
-      "Bash(grep -E '\\\\.\\(js|html|css\\)$')"
+      "Bash(grep -E '\\\\.\\(js|html|css\\)$')",
+      "Bash(echo \"PID: $!\")",
+      "Bash(xargs ls)",
+      "Bash(npm init *)",
+      "Bash(npm install *)",
+      "Bash(xcode-select -p)",
+      "Bash(xcrun simctl *)",
+      "Bash(pod --version)",
+      "Bash(git mv *)",
+      "Bash(npx cap *)",
+      "Skill(run)",
+      "Bash(lsof -ti:8080)",
+      "Bash(xargs kill -9)",
+      "Bash(npx serve *)",
+      "Bash(npm list *)",
+      "Bash(xargs ls -la)",
+      "WebSearch"
     ]
   }
 }

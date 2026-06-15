@@ -307,8 +307,8 @@
   border: 2px solid rgba(255, 255, 255, 0.9);
 }
 
-/* ── 가로 모드 레이아웃 ── */
-@media (orientation: landscape) {
+/* ── 가로 모드 레이아웃 (모바일 전용 — 데스크톱은 높이가 500px 이상이라 제외) ── */
+@media (orientation: landscape) and (max-height: 500px) {
   /* 전체 너비 사용, 가로 2단 레이아웃 */
   .player-view {
     display: flex;

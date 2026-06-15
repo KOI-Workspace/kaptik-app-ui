@@ -257,6 +257,7 @@ export const STRINGS = {
   'settings.language':  { ko: '언어', en: 'Language' },
   'settings.notification.live': { ko: '아티스트 라이브 시작', en: 'Artist live started' },
   'settings.notification.liveHelp': { ko: '팔로우한 아티스트가 라이브를 시작하면 알려드려요.', en: 'Get notified when a followed artist starts a live.' },
+  'settings.notification.liveNoArtists': { ko: '팔로우한 아티스트가 없어요', en: 'No followed artists yet' },
   'settings.notification.subtitle': { ko: '자막 생성 완료', en: 'Subtitles ready' },
   'settings.notification.subtitleHelp': { ko: '요청한 영상의 번역 자막이 준비되면 알려드려요.', en: 'Get notified when requested subtitles are ready.' },
   'settings.notification.product': { ko: 'Kaptik 소식 및 혜택', en: 'Kaptik news & offers' },

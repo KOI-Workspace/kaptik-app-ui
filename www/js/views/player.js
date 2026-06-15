@@ -520,7 +520,11 @@ function updateOverlay(cur) {
   }
   items.push(cur);
 
-  const fontSize = Math.round(14 * overlaySettings.subtitleSize / 100);
+  const scale = overlaySettings.subtitleSize / 100;
+  const fontSize = Math.round(14 * scale);
+  const avatarSize = Math.round(26 * scale);
+  const avatarFontSize = Math.round(8 * scale);
+  const nameFontSize = Math.round(11 * scale);
 
   items.forEach((item, i) => {
     const text = item[currentLang] || item.en || '';
@@ -534,7 +538,7 @@ function updateOverlay(cur) {
     if (overlaySettings.showSpeaker && speaker) {
       const av = document.createElement('div');
       av.className = 'overlay-avatar';
-      av.style.cssText = `background:${color}22;border:1.5px solid ${color}66;color:${color}`;
+      av.style.cssText = `background:${color}22;border:1.5px solid ${color}66;color:${color};width:${avatarSize}px;height:${avatarSize}px;font-size:${avatarFontSize}px`;
       const imgSrc = SPEAKER_IMAGES[speaker];
       if (imgSrc) {
         const img = document.createElement('img');
@@ -551,6 +555,7 @@ function updateOverlay(cur) {
       const nm = document.createElement('div');
       nm.className = 'overlay-name';
       nm.style.color = color;
+      nm.style.fontSize = nameFontSize + 'px';
       nm.textContent = speaker;
       body.appendChild(nm);
     }
