@@ -20,6 +20,7 @@
 		504EC30F1FED79650016851F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30E1FED79650016851F /* Assets.xcassets */; };
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
+		A20000000000000000000001 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* MainViewController.swift */; };
 		AD17F47D2FDFC7DF00BE5724 /* PopupWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD17F47B2FDFC7DF00BE5724 /* PopupWebViewController.swift */; };
 		AD17F4802FDFCC2500BE5724 /* NativeWebViewPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD17F47F2FDFCC2500BE5724 /* NativeWebViewPlugin.swift */; };
 		AD17F4832FDFD47200BE5724 /* NativeWebViewPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = AD17F4822FDFD47200BE5724 /* NativeWebViewPlugin.m */; };
@@ -66,6 +67,7 @@
 		504EC3131FED79650016851F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		50B271D01FEDC1A000F3C39B /* public */ = {isa = PBXFileReference; lastKnownFileType = folder; path = public; sourceTree = "<group>"; };
 		958DCC722DB07C7200EA8C5F /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = debug.xcconfig; path = ../debug.xcconfig; sourceTree = SOURCE_ROOT; };
+		A20000000000000000000002 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		AD17F47B2FDFC7DF00BE5724 /* PopupWebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupWebViewController.swift; sourceTree = "<group>"; };
 		AD17F47F2FDFCC2500BE5724 /* NativeWebViewPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeWebViewPlugin.swift; sourceTree = "<group>"; };
 		AD17F4822FDFD47200BE5724 /* NativeWebViewPlugin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NativeWebViewPlugin.m; sourceTree = "<group>"; };
@@ -132,6 +134,7 @@
 		504EC3061FED79650016851F /* App */ = {
 			isa = PBXGroup;
 			children = (
+				A20000000000000000000002 /* MainViewController.swift */,
 				AD17F4822FDFD47200BE5724 /* NativeWebViewPlugin.m */,
 				AD17F47F2FDFCC2500BE5724 /* NativeWebViewPlugin.swift */,
 				AD17F47B2FDFC7DF00BE5724 /* PopupWebViewController.swift */,
@@ -273,6 +276,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A20000000000000000000001 /* MainViewController.swift in Sources */,
 				AD17F47D2FDFC7DF00BE5724 /* PopupWebViewController.swift in Sources */,
 				AD17F4802FDFCC2500BE5724 /* NativeWebViewPlugin.swift in Sources */,
 				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
