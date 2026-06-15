@@ -58,7 +58,7 @@ class PopupWebViewController: UIViewController {
 // MARK: - 팝업이 스스로 window.close() 호출 시 처리
 extension PopupWebViewController: WKUIDelegate {
   func webViewDidClose(_ webView: WKWebView) {
-    dismiss(animated: true)
+    dismiss(animated: t
   }
 
   // 팝업 안에서 또 팝업이 열리는 경우 (중첩 처리)
