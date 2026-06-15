@@ -3,18 +3,9 @@
  * 앱(iOS) 환경에서만 동작하고, 웹(localhost)에서는 no-op으로 처리한다
  */
 
-let nativeWebViewPlugin = null;
-
-/** Capacitor 8에서는 커스텀 네이티브 플러그인을 JavaScript에서 명시적으로 등록해야 한다. */
+/** MainViewController가 Capacitor 브리지에 등록한 네이티브 플러그인을 조회한다. */
 function getPlugin() {
-  const capacitor = window.Capacitor;
-  if (!capacitor?.isNativePlatform?.()) return null;
-  if (!capacitor.isPluginAvailable?.('NativeWebViewPlugin')) return null;
-
-  if (!nativeWebViewPlugin) {
-    nativeWebViewPlugin = capacitor.registerPlugin('NativeWebViewPlugin');
-  }
-  return nativeWebViewPlugin;
+  return window.Capacitor?.Plugins?.NativeWebViewPlugin ?? null;
 }
 
 /** 네이티브 WKWebView 사용 가능 여부 (호출 시점에 체크) */
