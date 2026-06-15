@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <!-- PWA / 홈 화면 추가 -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Kaptik" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <!-- Capacitor: iframe 내 외부 콘텐츠 허용 -->
+  <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; frame-src *;" />
+  <title>Kaptik</title>
+  <link rel="manifest" href="/public/manifest.json" />
+  <link rel="apple-touch-icon" href="/public/images/icon-192.png" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/app.css" />
+  <link rel="stylesheet" href="css/player.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- 화면(뷰)이 렌더되는 영역 -->
+    <main id="view-root"></main>
+
+    <!-- 하단 네비게이션 (Home / Translate / My) -->
+    <nav id="bottom-nav" aria-label="메인 내비게이션"></nav>
+  </div>
+
+  <!-- 모달 / 오버레이 / 토스트 루트 -->
+  <div id="modal-root"></div>
+  <div id="toast-root"></div>
+
+  <!-- YouTube IFrame Player API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <!-- Capacitor 브리지는 네이티브 앱이 자동 주입 (별도 import 불필요) -->
+  <!-- 앱 부트스트랩 -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
