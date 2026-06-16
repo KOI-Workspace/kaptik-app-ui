@@ -25,7 +25,8 @@
       "Bash(lsof -nP -iTCP:8000 -sTCP:LISTEN)",
       "Bash(node --input-type=module)",
       "Bash(node *)",
-      "Bash(grep -E '\\\\.\\(js|html|css\\)$')"
+      "Bash(grep -E '\\\\.\\(js|html|css\\)$')",
+      "Bash(git checkout *)"
     ]
   }
 }
