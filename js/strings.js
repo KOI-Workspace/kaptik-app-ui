@@ -56,7 +56,7 @@ export const STRINGS = {
   /* ── 마이(My) ── */
   'my.banner.descHtml': {
     ko: 'Live 영상과 유튜브·위버스·인스타 등<br>모든 영상의 번역을 받아보세요',
-    en: 'Get translations for lives and<br>every video on YouTube, Weverse, Instagram',
+    en: 'Get translations for Weverse lives and every video on Youtube.',
     ja: 'ライブやYouTube・Weverse・Insta など<br>すべての動画の翻訳を受け取りましょう',
     'zh-CN': '获取直播以及 YouTube、Weverse、Ins<br>等所有视频的翻译',
     es: 'Recibe traducciones de lives y de<br>todo video en YouTube, Weverse, Instagram',
